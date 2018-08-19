@@ -4,11 +4,14 @@
   "repository": "https://github.com/onefrankguy/singularity",
   "license": "CC-BY-4.0",
   "scripts": {
+    "autoprefixer": "postcss --no-map -u autoprefixer -r public/*.css",
     "build": "rm -rf public/* && npm run build:css",
-    "build:css": "npm run scss",
+    "build:css": "npm run scss && npm run autoprefixer",
     "scss": "node-sass --output-style compressed --omit-source-map-url -o public scss"
   },
   "devDependencies": {
-    "node-sass": "^4.9.3"
+    "autoprefixer": "^9.1.1",
+    "node-sass": "^4.9.3",
+    "postcss-cli": "^6.0.0"
   }
 }
