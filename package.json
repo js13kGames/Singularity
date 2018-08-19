@@ -5,12 +5,14 @@
   "license": "CC-BY-4.0",
   "scripts": {
     "autoprefixer": "postcss --no-map -u autoprefixer -r public/*.css",
-    "build": "rm -rf public/* && npm run build:css",
+    "build": "rm -rf public/* && npm run build:html && npm run build:css",
     "build:css": "npm run scss && npm run autoprefixer",
+    "build:html": "mkdir -p public && html-minifier --html5 --collapse-whitespace -o public/index.html index.html",
     "scss": "node-sass --output-style compressed --omit-source-map-url -o public scss"
   },
   "devDependencies": {
     "autoprefixer": "^9.1.1",
+    "html-minifier": "^3.5.20",
     "node-sass": "^4.9.3",
     "postcss-cli": "^6.0.0"
   }
