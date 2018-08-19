@@ -44,7 +44,7 @@ a, a:visited {
 }
 
 /* SHIP */
-$tile-size: 3.8rem;
+$tile-size: 4rem;
 $gray: rgba(255,255,255,.2);
 
 .ship {
@@ -84,4 +84,8 @@ $gray: rgba(255,255,255,.2);
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.picked {
+  background: pink;
 }
