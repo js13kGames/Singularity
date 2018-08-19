@@ -13,6 +13,7 @@
     "build:js": "mkdir -p public && uglifyjs 'js/*.js' -m -c -o public/singularity.js",
     "lint": "eslint 'js/*.js' 2>&1",
     "scss": "node-sass --output-style compressed --omit-source-map-url -o public scss",
+    "sync": "cd public && rsync -avz --delete --files-from=../manifest.txt ./ frankmitchell.org:/home/public/singularity",
     "watch": "npm-run-all --parallel watch:*",
     "watch:css": "onchange 'scss/*.scss' -- npm run build:css",
     "watch:html": "onchange '*.html' -- npm run build:html",
