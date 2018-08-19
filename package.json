@@ -4,7 +4,11 @@
   "repository": "https://github.com/onefrankguy/singularity",
   "license": "CC-BY-4.0",
   "scripts": {
+    "build": "rm -rf public/* && npm run build:css",
+    "build:css": "npm run scss",
+    "scss": "node-sass --output-style compressed --omit-source-map-url -o public scss"
   },
   "devDependencies": {
+    "node-sass": "^4.9.3"
   }
 }
