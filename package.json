@@ -1,0 +1,10 @@
+{
+  "name": "singularity",
+  "version": "1.0.0",
+  "repository": "https://github.com/onefrankguy/singularity",
+  "license": "CC-BY-4.0",
+  "scripts": {
+  },
+  "devDependencies": {
+  }
+}
