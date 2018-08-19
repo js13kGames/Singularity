@@ -34,7 +34,7 @@ a, a:visited {
 
 /* WORLD */
 .world {
-  display: flex;
+  display: grid;
   justify-content: center;
   /* Usable area on an iPhone 4 is 320x372 pixels */
   width: 32rem;
@@ -45,19 +45,40 @@ a, a:visited {
 
 /* SHIP */
 $tile-size: 3.8rem;
+$gray: rgba(255,255,255,.2);
 
 .ship {
-  display: inline-grid;
-  grid-template-areas:
-  ". . . . . . . ."
-  ;
-  border-top: 1px solid gray;
-  border-left: 1px solid gray;
+  display: grid;
+  grid-template-columns: repeat(8, $tile-size);
+  border-top: 1px solid $gray;
+  border-left: 1px solid $gray;
 }
 
 .ship > * {
-  border-bottom: 1px solid gray;
-  border-right: 1px solid gray;
+  border-right: 1px solid $gray;
+  border-bottom: 1px solid $gray;
+  width: $tile-size;
+  height: $tile-size;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.crew:before {
+  content: 'C';
+}
+
+/* HAND */
+
+.hand {
+  display: grid;
+  justify-items: center;
+  grid-template-columns: repeat(5, 1fr);
+  margin-top: 1rem;
+}
+
+.hand > * {
+  border: 1px solid $gray;
   width: $tile-size;
   height: $tile-size;
   display: flex;
