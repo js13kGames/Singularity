@@ -31,3 +31,36 @@ a, a:visited {
   color: inherit;
   text-decoration: none;
 }
+
+/* WORLD */
+.world {
+  display: flex;
+  justify-content: center;
+  /* Usable area on an iPhone 4 is 320x372 pixels */
+  width: 32rem;
+  margin: 0 auto;
+  padding-top: .5rem;
+  overflow: hidden;
+}
+
+/* SHIP */
+$tile-size: 3.8rem;
+
+.ship {
+  display: inline-grid;
+  grid-template-areas:
+  ". . . . . . . ."
+  ;
+  border-top: 1px solid gray;
+  border-left: 1px solid gray;
+}
+
+.ship > * {
+  border-bottom: 1px solid gray;
+  border-right: 1px solid gray;
+  width: $tile-size;
+  height: $tile-size;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
