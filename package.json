@@ -5,7 +5,9 @@
   "license": "CC-BY-4.0",
   "scripts": {
     "autoprefixer": "postcss --no-map -u autoprefixer -r public/*.css",
-    "build": "rm -rf public/* && npm run build:html && npm run build:css",
+    "prebuild": "rm -rf singularity.zip && rm -rf public/* && npm run build:html && npm run build:css",
+    "build": "cd public && advzip -a -4 ../singularity.zip $(cat ../manifest.txt)",
+    "postbuild": "node test.js; exit 0",
     "build:css": "npm run scss && npm run autoprefixer",
     "build:html": "mkdir -p public && html-minifier --html5 --collapse-whitespace -o public/index.html index.html",
     "scss": "node-sass --output-style compressed --omit-source-map-url -o public scss"
