@@ -69,19 +69,6 @@ Rules.isCenter = (ship, tile) => {
 
 Rules.isEdge = (ship, tile) => !Rules.isCenter(ship, tile);
 
-Rules.isCorner = (ship, tile) => {
-  const file = tile.slice(0, 1);
-  const rank = tile.slice(-1);
-
-  const firstFile = ship.files.slice(0, 1)[0];
-  const lastFile = ship.files.slice(-1)[0];
-
-  const firstRank = ship.ranks.slice(0, 1)[0];
-  const lastRank = ship.ranks.slice(-1)[0];
-
-  return (file === firstFile || file === lastFile) && (rank === firstRank || rank === lastRank);
-};
-
 Rules.needsCrew = ship => Rules.collect(ship, 'crew').length < 2;
 
 Rules.canAddCrew = (ship, tile) => {
