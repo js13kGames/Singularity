@@ -34,7 +34,7 @@ Renderer.render = (ship) => {
 
   Object.keys(ship.layout).forEach((id) => {
     const element = $(`#${id}`);
-    element.removeClass('crew');
+    element.removeClass('meteor');
     element.addClass(ship.layout[id]);
   });
 };
@@ -109,25 +109,51 @@ Rules.addCrew = (ship, tile) => {
   }
 
   function onClick(element) {
-    element.toggleClass('picked');
+    element.toggleClass('meteor');
+  }
+
+  function tileHTML() {
+    let html = '';
+
+    for (let i = 0; i < 9; i += 1) {
+      html += '<div></div>';
+    }
+
+    return html;
+  }
+
+  function drawShip() {
+    const $ = window.jQuery;
+    let html = '';
+
+    ship.files.forEach((file) => {
+      ship.ranks.forEach((rank) => {
+        html += `<div id="${file}${rank}">`
+        html += tileHTML();
+        html += '</div>';
+      });
+    });
+
+    $('#ship').html(html);
+  }
+
+  function drawHand() {
+    const $ = window.jQuery;
+
+    for (let i = 1; i <= 5; i += 1) {
+      $(`#p${i}`).html(tileHTML());
+    }
   }
 
   function play() {
     const $ = window.jQuery;
 
+    drawShip();
+    drawHand();
+
     for (let i = 1; i <= 5; i += 1) {
       $(`#p${i}`).click(onClick);
     }
-
-    let html = '';
-
-    ship.files.forEach((file) => {
-      ship.ranks.forEach((rank) => {
-        html += `<div id="${file}${rank}"></div>`;
-      });
-    });
-
-    $('#ship').html(html);
 
     ship.files.forEach((file) => {
       ship.ranks.forEach((rank) => {
