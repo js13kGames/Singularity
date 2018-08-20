@@ -55,9 +55,7 @@ Rules.isCenter = (ship, tile) => {
   return centerFiles.indexOf(file) > -1 && centerRanks.indexOf(rank) > -1;
 };
 
-Rules.isEdge = (ship, tile) => {
-  return !Rules.isCenter(ship, tile);
-};
+Rules.isEdge = (ship, tile) => !Rules.isCenter(ship, tile);
 
 Rules.isCorner = (ship, tile) => {
   const file = tile.slice(0, 1);
@@ -101,6 +99,29 @@ Rules.addCrew = (ship, tile) => {
   return Ship.clone(ship);
 };
 
+Rules.canAddMeteor = (ship, tile) => {
+  // Meteors can only be added to an empty space on the ship.
+  if (ship.layout[tile] !== '') {
+    return false;
+  }
+
+  // There are a max of three meteors on the ship.
+  const meteors = Object.keys(ship.layout).filter(id => ship.layout[id] === 'meteor');
+  if (meteors.length >= 3) {
+    return false;
+  }
+
+  return true;
+};
+
+Rules.addMeteor = (ship, tile) => {
+  if (Rules.canAddMeteor(ship, tile)) {
+    return Ship.set(ship, tile, 'meteor');
+  }
+
+  return Ship.clone(ship);
+};
+
 (function game() {
   let ship = Ship.create();
 
@@ -128,7 +149,7 @@ Rules.addCrew = (ship, tile) => {
 
     ship.files.forEach((file) => {
       ship.ranks.forEach((rank) => {
-        html += `<div id="${file}${rank}">`
+        html += `<div id="${file}${rank}">`;
         html += tileHTML();
         html += '</div>';
       });
