@@ -119,6 +119,16 @@ Rules.addCrew = (ship, tile) => {
       $(`#p${i}`).click(onClick);
     }
 
+    let html = '';
+
+    ship.files.forEach((file) => {
+      ship.ranks.forEach((rank) => {
+        html += `<div id="${file}${rank}"></div>`;
+      });
+    });
+
+    $('#ship').html(html);
+
     ship.files.forEach((file) => {
       ship.ranks.forEach((rank) => {
         $(`#${file}${rank}`).click(onClick);
@@ -164,6 +174,12 @@ Rules.addCrew = (ship, tile) => {
   Fn.prototype.toggleClass = function toggleClass(klass) {
     if (this.element && this.element.classList) {
       this.element.classList.toggle(klass);
+    }
+  };
+
+  Fn.prototype.html = function html(value) {
+    if (this.element) {
+      this.element.innerHTML = value;
     }
   };
 
