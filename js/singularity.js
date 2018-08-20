@@ -46,6 +46,10 @@ Renderer.invalidate = (ship) => {
 
 const Rules = {};
 
+Rules.possible = (ship, tile) => ship && tile && ship.layout.hasOwnProperty(tile);
+
+Rules.playable = (ship, tile) => Rules.possible(ship, tile) && ship.layout[tile] === '';
+
 Rules.isCenter = (ship, tile) => {
   const file = tile.slice(0, 1);
   const rank = tile.slice(-1);
@@ -71,17 +75,6 @@ Rules.isCorner = (ship, tile) => {
   return (file === firstFile || file === lastFile) && (rank === firstRank || rank === lastRank);
 };
 
-Rules.onGrid = (ship, tile) => {
-  if (!tile) {
-    return false;
-  }
-
-  const file = tile.slice(0, 1);
-  const rank = tile.slice(-1);
-
-  return ship.files.indexOf(file) > -1 && ship.ranks.indexOf(rank) > -1;
-};
-
 Rules.needsCrew = (ship) => {
   // There are a max of two crew on the ship.
   const crew = Object.keys(ship.layout).filter(id => ship.layout[id].indexOf('crew') > -1);
@@ -89,12 +82,7 @@ Rules.needsCrew = (ship) => {
 };
 
 Rules.canAddCrew = (ship, tile) => {
-  if (!Rules.onGrid(ship, tile)) {
-    return false;
-  }
-
-  // Crew can only be added to an empty space on the ship.
-  if (ship.layout[tile] !== '') {
+  if (!Rules.playable(ship, tile)) {
     return false;
   }
 
@@ -121,12 +109,7 @@ Rules.needsMeteor = (ship) => {
 };
 
 Rules.canAddMeteor = (ship, tile) => {
-  if (!Rules.onGrid(ship, tile)) {
-    return false;
-  }
-
-  // Meteors can only be added to an empty space on the ship.
-  if (ship.layout[tile] !== '') {
+  if (!Rules.playable(ship, tile)) {
     return false;
   }
 
@@ -148,12 +131,7 @@ Rules.needsPod = (ship) => {
 };
 
 Rules.canAddPod = (ship, tile) => {
-  if (!Rules.onGrid(ship, tile)) {
-    return false;
-  }
-
-  // Escape pods can only be added to an empty space on the ship.
-  if (ship.layout[tile] !== '') {
+  if (!Rules.playable(ship, tile)) {
     return false;
   }
 
@@ -174,7 +152,7 @@ Rules.addPod = (ship, tile) => {
 };
 
 Rules.clear = (ship, tile) => {
-  if (Rules.onGrid(ship, tile)) {
+  if (Rules.possible(ship, tile)) {
     return Ship.set(ship, tile, '');
   }
 
@@ -182,7 +160,7 @@ Rules.clear = (ship, tile) => {
 };
 
 Rules.rotate = (ship, tile) => {
-  if (!Rules.onGrid(ship, tile)) {
+  if (!Rules.possible(ship, tile)) {
     return Ship.clone(ship);
   }
 
@@ -212,7 +190,7 @@ const Engine = {};
 Engine.tick = (ship, prev, tile) => {
   let next = Rules.clear(ship, prev);
 
-  if (prev === tile && Rules.onGrid(ship, tile)) {
+  if (prev === tile && Rules.possible(ship, tile)) {
     next = Rules.rotate(ship, tile);
     return [next, prev];
   }
