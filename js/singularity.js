@@ -29,7 +29,7 @@ Ship.set = (ship, tile, value) => {
 
 const Renderer = {};
 
-Renderer.render = (ship) => {
+Renderer.render = (ship, item) => {
   const $ = window.jQuery;
 
   Object.keys(ship.layout).forEach((id) => {
@@ -39,10 +39,14 @@ Renderer.render = (ship) => {
     element.removeClass('hall corner tee junction');
     element.addClass(ship.layout[id]);
   });
+
+  $('#scan').removeClass('meteor crew pod');
+  $('#scan').removeClass('hall corner tee junction');
+  $('#scan').addClass(item);
 };
 
-Renderer.invalidate = (ship) => {
-  requestAnimationFrame(() => Renderer.render(ship));
+Renderer.invalidate = (ship, item) => {
+  requestAnimationFrame(() => Renderer.render(ship, item));
 };
 
 const Rules = {};
@@ -254,32 +258,46 @@ Engine.tick = (ship, prev, tile, corridor) => {
   return [ship, prev];
 };
 
+Engine.item = (ship) => {
+  const corridors = ['hall', 'corner', 'tee', 'junction'];
+  let item = corridors[Math.floor(Math.random() * corridors.length)];
+
+  if (Rules.needsPod(ship)) {
+    item = 'pod';
+  }
+
+  if (Rules.needsCrew(ship)) {
+    item = 'crew';
+  }
+
+  if (Rules.needsMeteor(ship)) {
+    item = 'meteor';
+  }
+
+  return item;
+};
+
 (function game() {
-  let ship = Ship.create();
+  let ship;
   let picked;
-  let corridor;
+  let item;
 
   function reset() {
     ship = Ship.create();
     picked = undefined;
-    corridor = undefined;
+    item = Engine.item(ship);
   }
 
   function onShip(element) {
-    if (!corridor) {
-      const corridors = ['hall', 'corner', 'tee', 'junction'];
-      corridor = corridors[Math.floor(Math.random() * corridors.length)];
-    }
-
     const tile = element.unwrap().id;
-    [ship, picked] = Engine.tick(ship, picked, tile, corridor);
-
-    Renderer.invalidate(ship);
+    [ship, picked] = Engine.tick(ship, picked, tile, item);
+    Renderer.invalidate(ship, item);
   }
 
   function onScan() {
     picked = undefined;
-    corridor = undefined;
+    item = Engine.item(ship);
+    Renderer.invalidate(ship, item);
   }
 
   function tileHTML() {
@@ -313,6 +331,7 @@ Engine.tick = (ship, prev, tile, corridor) => {
   function play() {
     const $ = window.jQuery;
 
+    reset();
     drawShip();
 
     ship.files.forEach((file) => {
@@ -324,8 +343,7 @@ Engine.tick = (ship, prev, tile, corridor) => {
     $('#scan').html(tileHTML());
     $('#scan').click(onScan);
 
-    reset();
-    Renderer.invalidate(ship);
+    Renderer.invalidate(ship, item);
   }
 
   window.onload = play;
