@@ -64,10 +64,6 @@ $gray: rgba(255,255,255,.2);
   align-items: center;
 }
 
-.crew:before {
-  content: 'C';
-}
-
 /* HAND */
 .hand {
   display: grid;
@@ -138,4 +134,44 @@ $white: rgba(255,255,255,.9);
 
 .meteor > div:nth-child(4) {
   border-left: ($tile-size / 6) solid transparent;
+}
+
+/* CREW */
+.crew {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+}
+
+.crew > div {
+  width: ($tile-size / 3);
+  height: ($tile-size / 3);
+}
+
+.crew > div:nth-child(1) {
+  background: $white;
+  border-top-left-radius: 100%;
+}
+
+.crew > div:nth-child(2) {
+  background: $white;
+}
+
+.crew > div:nth-child(3) {
+  background: $white;
+  border-top-right-radius: 100%;
+}
+
+.crew > div:nth-child(4) {
+  background: $white;
+  border-bottom-left-radius: 100%;
+}
+
+.crew > div:nth-child(5) {
+  background: $white;
+}
+
+.crew > div:nth-child(6) {
+  background: $white;
+  border-bottom-right-radius: 100%;
 }
