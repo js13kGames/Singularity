@@ -44,12 +44,12 @@ a, a:visited {
 }
 
 /* SHIP */
-$tile-size: 4rem;
+$tile-size: 4.8rem;
 $gray: rgba(255,255,255,.2);
 
 .ship {
   display: grid;
-  grid-template-columns: repeat(8, $tile-size);
+  grid-template-columns: repeat(6, $tile-size);
   border-top: 1px solid $gray;
   border-left: 1px solid $gray;
 }
