@@ -122,6 +122,20 @@ Rules.addMeteor = (ship, tile) => {
   return Ship.clone(ship);
 };
 
+const Engine = {};
+
+Engine.tick = (ship, tile) => {
+  if (Rules.canAddMeteor(ship, tile)) {
+    return Rules.addMeteor(ship, tile);
+  }
+
+  if (Rules.canAddCrew(ship, tile)) {
+    return Rules.addCrew(ship, tile);
+  }
+
+  return Ship.clone(ship);
+};
+
 (function game() {
   let ship = Ship.create();
 
@@ -130,7 +144,8 @@ Rules.addMeteor = (ship, tile) => {
   }
 
   function onClick(element) {
-    element.toggleClass('meteor');
+    ship = Engine.tick(ship, element.unwrap().id);
+    Renderer.invalidate(ship);
   }
 
   function tileHTML() {
@@ -171,10 +186,6 @@ Rules.addMeteor = (ship, tile) => {
 
     drawShip();
     drawHand();
-
-    for (let i = 1; i <= 5; i += 1) {
-      $(`#p${i}`).click(onClick);
-    }
 
     ship.files.forEach((file) => {
       ship.ranks.forEach((rank) => {
@@ -268,6 +279,10 @@ Rules.addMeteor = (ship, tile) => {
         };
       }
     }
+  };
+
+  Fn.prototype.unwrap = function unwrap() {
+    return this.element;
   };
 
   function root(selector) {
