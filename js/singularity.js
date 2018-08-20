@@ -82,29 +82,6 @@ Rules.isCenter = (ship, tile) => {
 
 Rules.isEdge = (ship, tile) => !Rules.isCenter(ship, tile);
 
-Rules.needsCrew = ship => Rules.collect(ship, 'crew').length < 2;
-
-Rules.canAddCrew = (ship, tile) => {
-  if (!Rules.playable(ship, tile)) {
-    return false;
-  }
-
-  // Crew must go in the center.
-  if (!Rules.isCenter(ship, tile)) {
-    return false;
-  }
-
-  return Rules.needsCrew(ship);
-};
-
-Rules.addCrew = (ship, tile) => {
-  if (Rules.canAddCrew(ship, tile)) {
-    return Ship.set(ship, tile, 'crew');
-  }
-
-  return Ship.clone(ship);
-};
-
 Rules.needsMeteor = ship => Rules.collect(ship, 'meteor').length < 3;
 
 Rules.canAddMeteor = (ship, tile) => {
@@ -124,6 +101,29 @@ Rules.canAddMeteor = (ship, tile) => {
 Rules.addMeteor = (ship, tile) => {
   if (Rules.canAddMeteor(ship, tile)) {
     return Ship.set(ship, tile, 'meteor');
+  }
+
+  return Ship.clone(ship);
+};
+
+Rules.needsCrew = ship => Rules.collect(ship, 'crew').length < 2;
+
+Rules.canAddCrew = (ship, tile) => {
+  if (!Rules.playable(ship, tile)) {
+    return false;
+  }
+
+  // Crew must go in the center.
+  if (!Rules.isCenter(ship, tile)) {
+    return false;
+  }
+
+  return Rules.needsCrew(ship);
+};
+
+Rules.addCrew = (ship, tile) => {
+  if (Rules.canAddCrew(ship, tile)) {
+    return Ship.set(ship, tile, 'crew');
   }
 
   return Ship.clone(ship);
