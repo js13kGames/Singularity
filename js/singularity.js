@@ -35,6 +35,7 @@ Renderer.render = (ship) => {
   Object.keys(ship.layout).forEach((id) => {
     const element = $(`#${id}`);
     element.removeClass('meteor');
+    element.removeClass('crew');
     element.addClass(ship.layout[id]);
   });
 };
@@ -70,20 +71,39 @@ Rules.isCorner = (ship, tile) => {
   return (file === firstFile || file === lastFile) && (rank === firstRank || rank === lastRank);
 };
 
+Rules.onGrid = (ship, tile) => {
+  if (!tile) {
+    return false;
+  }
+
+  const file = tile.slice(0, 1);
+  const rank = tile.slice(-1);
+
+  return ship.files.indexOf(file) > -1 && ship.ranks.indexOf(rank) > -1;
+};
+
+Rules.needsCrew = (ship) => {
+  // There are a max of two crew on the ship.
+  const crew = Object.keys(ship.layout).filter(id => ship.layout[id] === 'crew');
+  return crew.length < 2;
+};
+
 Rules.canAddCrew = (ship, tile) => {
+  if (!Rules.onGrid(ship, tile)) {
+    return false;
+  }
+
   // Crew can only be added to an empty space on the ship.
   if (ship.layout[tile] !== '') {
     return false;
   }
 
-  // There are a max of two crew on the ship.
-  const crew = Object.keys(ship.layout).filter(id => ship.layout[id] === 'crew');
-  if (crew.length >= 2) {
+  // Crew must go in the center.
+  if (!Rules.isCenter(ship, tile)) {
     return false;
   }
 
-  // Crew must go in the center.
-  return Rules.isCenter(ship, tile);
+  return Rules.needsCrew(ship);
 };
 
 Rules.addCrew = (ship, tile) => {
@@ -94,19 +114,23 @@ Rules.addCrew = (ship, tile) => {
   return Ship.clone(ship);
 };
 
+Rules.needsMeteor = (ship) => {
+  // There are a max of three meteors on the ship.
+  const meteors = Object.keys(ship.layout).filter(id => ship.layout[id] === 'meteor');
+  return meteors.length < 3;
+};
+
 Rules.canAddMeteor = (ship, tile) => {
+  if (!Rules.onGrid(ship, tile)) {
+    return false;
+  }
+
   // Meteors can only be added to an empty space on the ship.
   if (ship.layout[tile] !== '') {
     return false;
   }
 
-  // There are a max of three meteors on the ship.
-  const meteors = Object.keys(ship.layout).filter(id => ship.layout[id] === 'meteor');
-  if (meteors.length >= 3) {
-    return false;
-  }
-
-  return true;
+  return Rules.needsMeteor(ship);
 };
 
 Rules.addMeteor = (ship, tile) => {
@@ -117,30 +141,56 @@ Rules.addMeteor = (ship, tile) => {
   return Ship.clone(ship);
 };
 
-const Engine = {};
-
-Engine.tick = (ship, tile) => {
-  if (Rules.canAddMeteor(ship, tile)) {
-    return Rules.addMeteor(ship, tile);
-  }
-
-  if (Rules.canAddCrew(ship, tile)) {
-    return Rules.addCrew(ship, tile);
+Rules.clear = (ship, tile) => {
+  if (Rules.onGrid(ship, tile)) {
+    return Ship.set(ship, tile, '');
   }
 
   return Ship.clone(ship);
 };
 
+const Engine = {};
+
+Engine.tick = (ship, prev, tile) => {
+  let next = Rules.clear(ship, prev);
+
+  if (Rules.needsMeteor(next)) {
+    if (Rules.canAddMeteor(next, tile)) {
+      next = Rules.addMeteor(next, tile);
+      return [next, tile]
+    }
+
+    return [ship, prev];
+  }
+
+  if (Rules.needsCrew(next)) {
+    if (Rules.canAddCrew(next, tile)) {
+      next = Rules.addCrew(next, tile);
+      return [next, tile]
+    }
+
+    return [ship, prev];
+  }
+
+  return [ship, prev];
+};
+
 (function game() {
   let ship = Ship.create();
+  let picked = undefined;
 
   function reset() {
     ship = Ship.create();
+    picked = undefined;
   }
 
-  function onClick(element) {
-    ship = Engine.tick(ship, element.unwrap().id);
+  function onShip(element) {
+    [ship, picked] = Engine.tick(ship, picked, element.unwrap().id);
     Renderer.invalidate(ship);
+  }
+
+  function onScan(element) {
+    picked = undefined;
   }
 
   function tileHTML() {
@@ -157,8 +207,11 @@ Engine.tick = (ship, tile) => {
     const $ = window.jQuery;
     let html = '';
 
-    ship.files.forEach((file) => {
-      ship.ranks.forEach((rank) => {
+    const files = ship.files.slice();
+    const ranks = ship.ranks.slice().reverse();
+
+    ranks.forEach((rank) => {
+      files.forEach((file) => {
         html += `<div id="${file}${rank}">`;
         html += tileHTML();
         html += '</div>';
@@ -168,25 +221,18 @@ Engine.tick = (ship, tile) => {
     $('#ship').html(html);
   }
 
-  function drawHand() {
-    const $ = window.jQuery;
-
-    for (let i = 1; i <= 5; i += 1) {
-      $(`#p${i}`).html(tileHTML());
-    }
-  }
-
   function play() {
     const $ = window.jQuery;
 
     drawShip();
-    drawHand();
 
     ship.files.forEach((file) => {
       ship.ranks.forEach((rank) => {
-        $(`#${file}${rank}`).click(onClick);
+        $(`#${file}${rank}`).click(onShip);
       });
     });
+
+    $('#scan').click(onScan);
 
     reset();
     Renderer.invalidate(ship);

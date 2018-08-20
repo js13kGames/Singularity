@@ -64,15 +64,15 @@ $gray: rgba(255,255,255,.2);
   align-items: center;
 }
 
-/* HAND */
-.hand {
+/* CONTROLS */
+.controls {
   display: grid;
   justify-items: center;
   grid-template-columns: repeat(5, 1fr);
   margin-top: 1rem;
 }
 
-.hand > * {
+.controls > * {
   border: 1px solid $gray;
   width: $tile-size;
   height: $tile-size;
