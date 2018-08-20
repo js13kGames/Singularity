@@ -1,3 +1,9 @@
+/* eslint-disable no-restricted-globals */
+const Root = (typeof self === 'object' && self.self === self && self)
+  || (typeof global === 'object' && global.global === global && global)
+  || this;
+/* eslint-enable no-restricted-globals */
+
 const Ship = {};
 
 Ship.create = () => {
@@ -30,7 +36,7 @@ Ship.set = (ship, tile, value) => {
 const Renderer = {};
 
 Renderer.render = (ship, item) => {
-  const $ = window.jQuery;
+  const $ = Root.jQuery;
 
   Object.keys(ship.layout).forEach((id) => {
     const element = $(`#${id}`);
@@ -327,7 +333,7 @@ Engine.item = (ship) => {
   }
 
   function drawShip() {
-    const $ = window.jQuery;
+    const $ = Root.jQuery;
     let html = '';
 
     const files = ship.files.slice();
@@ -345,7 +351,7 @@ Engine.item = (ship) => {
   }
 
   function play() {
-    const $ = window.jQuery;
+    const $ = Root.jQuery;
 
     reset();
     drawShip();
@@ -362,7 +368,7 @@ Engine.item = (ship) => {
     Renderer.invalidate(ship, item);
   }
 
-  window.onload = play;
+  Root.onload = play;
 }());
 
 (function $() {
@@ -456,5 +462,9 @@ Engine.item = (ship) => {
     return new Fn(selector);
   }
 
-  window.jQuery = root;
+  Root.jQuery = root;
 }());
+
+if (typeof module === 'object') {
+  module.exports = { Ship, Rules };
+}
