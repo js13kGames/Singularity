@@ -212,16 +212,16 @@ Engine.tick = (ship, prev, tile, corridor) => {
 
   if (prev === tile && Rules.possible(ship, tile)) {
     next = Rules.rotate(ship, tile);
-    return [next, prev, corridor];
+    return [next, prev];
   }
 
   if (Rules.needsMeteor(next)) {
     if (Rules.canAddMeteor(next, tile)) {
       next = Rules.addMeteor(next, tile);
-      return [next, tile, corridor];
+      return [next, tile];
     }
 
-    return [ship, prev, corridor];
+    return [ship, prev];
   }
 
   if (Rules.needsCrew(next)) {
@@ -230,28 +230,28 @@ Engine.tick = (ship, prev, tile, corridor) => {
       return [next, tile, corridor];
     }
 
-    return [ship, prev, corridor];
+    return [ship, prev];
   }
 
   if (Rules.needsPod(next)) {
     if (Rules.canAddPod(next, tile)) {
       next = Rules.addPod(next, tile);
-      return [next, tile, corridor];
+      return [next, tile];
     }
 
-    return [ship, prev, corridor];
+    return [ship, prev];
   }
 
   if (Rules.needsCorridor(next)) {
     if (Rules.canAddCorridor(next, tile, corridor)) {
       next = Rules.addCorridor(next, tile, corridor);
-      return [next, tile, undefined];
+      return [next, tile];
     }
 
-    return [ship, prev, corridor];
+    return [ship, prev];
   }
 
-  return [ship, prev, corridor];
+  return [ship, prev];
 };
 
 (function game() {
@@ -272,13 +272,14 @@ Engine.tick = (ship, prev, tile, corridor) => {
     }
 
     const tile = element.unwrap().id;
-    [ship, picked, corridor] = Engine.tick(ship, picked, tile, corridor);
+    [ship, picked] = Engine.tick(ship, picked, tile, corridor);
 
     Renderer.invalidate(ship);
   }
 
   function onScan() {
     picked = undefined;
+    corridor = undefined;
   }
 
   function tileHTML() {
