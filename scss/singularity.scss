@@ -69,7 +69,6 @@ $gray: rgba(255,255,255,.2);
 }
 
 /* HAND */
-
 .hand {
   display: grid;
   justify-items: center;
@@ -88,4 +87,59 @@ $gray: rgba(255,255,255,.2);
 
 .picked {
   background: pink;
+}
+
+/* METEOR */
+$white: rgba(255,255,255,.9);
+
+.meteor {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+}
+
+.meteor > div {
+  width: 0;
+  height: 0;
+  border: ($tile-size / 6) solid $white;
+}
+
+.meteor > div:nth-child(1) {
+  border-top: ($tile-size / 3) solid transparent;
+  border-bottom: none;
+  border-left: ($tile-size / 6) solid transparent;
+}
+
+.meteor > div:nth-child(2) {
+  border-top: ($tile-size / 6) solid transparent;
+}
+
+.meteor > div:nth-child(3) {
+  border-top: ($tile-size / 6) solid transparent;
+  border-right: ($tile-size / 3) solid transparent;
+  border-left: none;
+}
+
+.meteor > div:nth-child(6) {
+  border-right: ($tile-size / 6) solid transparent;
+}
+
+.meteor > div:nth-child(9) {
+  border-top: none;
+  border-bottom: ($tile-size / 3) solid transparent;
+  border-right: ($tile-size / 6) solid transparent;
+}
+
+.meteor > div:nth-child(8) {
+  border-bottom: ($tile-size / 6) solid transparent;
+}
+
+.meteor > div:nth-child(7) {
+  border-left: ($tile-size / 3) solid transparent;
+  border-right: none;
+  border-bottom: ($tile-size / 6) solid transparent;
+}
+
+.meteor > div:nth-child(4) {
+  border-left: ($tile-size / 6) solid transparent;
 }
