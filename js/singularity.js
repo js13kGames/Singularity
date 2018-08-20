@@ -141,12 +141,17 @@ Rules.canAddPod = (ship, tile) => {
     return false;
   }
 
-  // Escape pods can only be added to the edge of the ship.
+  if (!Rules.needsPod(ship)) {
+    return false;
+  }
+
   if (!Rules.isEdge(ship, tile)) {
     return false;
   }
 
-  return Rules.needsPod(ship);
+  const crew = Rules.collect(ship, 'crew');
+  const close = crew.filter(id => Rules.distance(ship, tile, id) < 3);
+  return close.length < 1;
 };
 
 Rules.addPod = (ship, tile) => {
