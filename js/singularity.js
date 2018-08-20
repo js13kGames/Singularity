@@ -304,6 +304,7 @@ Engine.tick = (ship, prev, tile) => {
       });
     });
 
+    $('#scan').html(tileHTML());
     $('#scan').click(onScan);
 
     reset();
