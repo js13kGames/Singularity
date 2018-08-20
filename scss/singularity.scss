@@ -227,6 +227,85 @@ $white: rgba(255,255,255,.9);
   border-right: ($tile-size / 16) solid transparent;
 }
 
+/* HALL */
+.hall {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+}
+
+.hall > div {
+  position: relative;
+  width: ($tile-size / 3);
+  height: ($tile-size / 3);
+}
+
+.hall > div:nth-child(4),
+.hall > div:nth-child(5),
+.hall > div:nth-child(6) {
+  background: $white;
+}
+
+/* CORNER */
+.corner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+}
+
+.corner > div {
+  position: relative;
+  width: ($tile-size / 3);
+  height: ($tile-size / 3);
+}
+
+.corner > div:nth-child(4),
+.corner > div:nth-child(5),
+.corner > div:nth-child(8) {
+  background: $white;
+}
+
+/* TEE */
+.tee {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+}
+
+.tee > div {
+  position: relative;
+  width: ($tile-size / 3);
+  height: ($tile-size / 3);
+}
+
+.tee > div:nth-child(4),
+.tee > div:nth-child(5),
+.tee > div:nth-child(6),
+.tee > div:nth-child(8) {
+  background: $white;
+}
+
+/* JUNCTION */
+.junction {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+}
+
+.junction > div {
+  position: relative;
+  width: ($tile-size / 3);
+  height: ($tile-size / 3);
+}
+
+.junction > div:nth-child(2),
+.junction > div:nth-child(4),
+.junction > div:nth-child(5),
+.junction > div:nth-child(6),
+.junction > div:nth-child(8) {
+  background: $white;
+}
+
 /* DIRECTIONS */
 .north {
   transform: rotate(0deg);
