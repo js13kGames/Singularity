@@ -36,6 +36,7 @@ Renderer.render = (ship) => {
     const element = $(`#${id}`);
     element.removeClass('meteor');
     element.removeClass('crew');
+    element.removeClass('north east south west');
     element.addClass(ship.layout[id]);
   });
 };
@@ -84,7 +85,7 @@ Rules.onGrid = (ship, tile) => {
 
 Rules.needsCrew = (ship) => {
   // There are a max of two crew on the ship.
-  const crew = Object.keys(ship.layout).filter(id => ship.layout[id] === 'crew');
+  const crew = Object.keys(ship.layout).filter(id => ship.layout[id].indexOf('crew') > -1);
   return crew.length < 2;
 };
 
@@ -116,7 +117,7 @@ Rules.addCrew = (ship, tile) => {
 
 Rules.needsMeteor = (ship) => {
   // There are a max of three meteors on the ship.
-  const meteors = Object.keys(ship.layout).filter(id => ship.layout[id] === 'meteor');
+  const meteors = Object.keys(ship.layout).filter(id => ship.layout[id].indexOf('meteor') > -1);
   return meteors.length < 3;
 };
 
@@ -149,15 +150,46 @@ Rules.clear = (ship, tile) => {
   return Ship.clone(ship);
 };
 
+Rules.rotate = (ship, tile) => {
+  if (!Rules.onGrid(ship, tile)) {
+    return Ship.clone(ship);
+  }
+
+  const directions = ['north', 'east', 'south', 'west'];
+  const type = ship.layout[tile].split(' ').filter(x => directions.indexOf(x) < 0).join(' ');
+
+  const east = ship.layout[tile].indexOf('east') > -1;
+  if (east) {
+    return Ship.set(ship, tile, `${type} south`);
+  }
+
+  const south = ship.layout[tile].indexOf('south') > -1;
+  if (south) {
+    return Ship.set(ship, tile, `${type} west`);
+  }
+
+  const west = ship.layout[tile].indexOf('west') > -1;
+  if (west) {
+    return Ship.set(ship, tile, `${type} north`);
+  }
+
+  return Ship.set(ship, tile, `${type} east`);
+};
+
 const Engine = {};
 
 Engine.tick = (ship, prev, tile) => {
   let next = Rules.clear(ship, prev);
 
+  if (prev === tile && Rules.onGrid(ship, tile)) {
+    next = Rules.rotate(ship, tile);
+    return [next, prev];
+  }
+
   if (Rules.needsMeteor(next)) {
     if (Rules.canAddMeteor(next, tile)) {
       next = Rules.addMeteor(next, tile);
-      return [next, tile]
+      return [next, tile];
     }
 
     return [ship, prev];
@@ -166,7 +198,7 @@ Engine.tick = (ship, prev, tile) => {
   if (Rules.needsCrew(next)) {
     if (Rules.canAddCrew(next, tile)) {
       next = Rules.addCrew(next, tile);
-      return [next, tile]
+      return [next, tile];
     }
 
     return [ship, prev];
@@ -177,7 +209,7 @@ Engine.tick = (ship, prev, tile) => {
 
 (function game() {
   let ship = Ship.create();
-  let picked = undefined;
+  let picked;
 
   function reset() {
     ship = Ship.create();
@@ -189,7 +221,7 @@ Engine.tick = (ship, prev, tile) => {
     Renderer.invalidate(ship);
   }
 
-  function onScan(element) {
+  function onScan() {
     picked = undefined;
   }
 
@@ -260,13 +292,15 @@ Engine.tick = (ship, prev, tile) => {
 
   Fn.prototype.addClass = function addClass(klass) {
     if (this.element && this.element.classList && klass) {
-      this.element.classList.add(klass);
+      const klasses = klass.split(' ').filter(k => k);
+      klasses.forEach(k => this.element.classList.add(k));
     }
   };
 
   Fn.prototype.removeClass = function removeClass(klass) {
     if (this.element && this.element.classList) {
-      this.element.classList.remove(klass);
+      const klasses = klass.split(' ').filter(k => k);
+      klasses.forEach(k => this.element.classList.remove(k));
     }
   };
 

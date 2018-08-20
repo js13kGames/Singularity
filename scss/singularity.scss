@@ -175,3 +175,20 @@ $white: rgba(255,255,255,.9);
   background: $white;
   border-bottom-right-radius: 100%;
 }
+
+/* DIRECTIONS */
+.north {
+  transform: rotate(0deg);
+}
+
+.east {
+  transform: rotate(90deg);
+}
+
+.south {
+  transform: rotate(180deg);
+}
+
+.west {
+  transform: rotate(270deg);
+}
