@@ -89,13 +89,13 @@ Rules.canAddMeteor = (ship, tile) => {
     return false;
   }
 
-  const meteors = Rules.collect(ship, 'meteor');
-  const toClose = meteors.filter(meteor => Rules.distance(ship, tile, meteor) <= 1);
-  if (toClose.length > 0) {
+  if (!Rules.needsMeteor(ship)) {
     return false;
   }
 
-  return Rules.needsMeteor(ship);
+  const meteors = Rules.collect(ship, 'meteor');
+  const close = meteors.filter(id => Rules.distance(ship, tile, id) < 2);
+  return close.length < 1;
 };
 
 Rules.addMeteor = (ship, tile) => {
@@ -113,12 +113,17 @@ Rules.canAddCrew = (ship, tile) => {
     return false;
   }
 
-  // Crew must go in the center.
+  if (!Rules.needsCrew(ship)) {
+    return false;
+  }
+
   if (!Rules.isCenter(ship, tile)) {
     return false;
   }
 
-  return Rules.needsCrew(ship);
+  const crew = Rules.collect(ship, 'crew');
+  const close = crew.filter(id => Rules.distance(ship, tile, id) < 2);
+  return close.length < 1;
 };
 
 Rules.addCrew = (ship, tile) => {
