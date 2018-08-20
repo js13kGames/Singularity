@@ -36,6 +36,7 @@ Renderer.render = (ship) => {
     const element = $(`#${id}`);
     element.removeClass('meteor crew pod');
     element.removeClass('north east south west');
+    element.removeClass('hall corner tee junction');
     element.addClass(ship.layout[id]);
   });
 };
@@ -46,9 +47,11 @@ Renderer.invalidate = (ship) => {
 
 const Rules = {};
 
-Rules.possible = (ship, tile) => ship && tile && ship.layout.hasOwnProperty(tile);
+Rules.possible = (ship, tile) => ship && tile && Object.keys(ship.layout).indexOf(tile) > -1;
 
 Rules.playable = (ship, tile) => Rules.possible(ship, tile) && ship.layout[tile] === '';
+
+Rules.collect = (ship, type) => Object.keys(ship.layout).filter(id => ship.layout[id].indexOf(type) > -1);
 
 Rules.isCenter = (ship, tile) => {
   const file = tile.slice(0, 1);
@@ -75,11 +78,7 @@ Rules.isCorner = (ship, tile) => {
   return (file === firstFile || file === lastFile) && (rank === firstRank || rank === lastRank);
 };
 
-Rules.needsCrew = (ship) => {
-  // There are a max of two crew on the ship.
-  const crew = Object.keys(ship.layout).filter(id => ship.layout[id].indexOf('crew') > -1);
-  return crew.length < 2;
-};
+Rules.needsCrew = ship => Rules.collect(ship, 'crew').length < 2;
 
 Rules.canAddCrew = (ship, tile) => {
   if (!Rules.playable(ship, tile)) {
@@ -102,11 +101,7 @@ Rules.addCrew = (ship, tile) => {
   return Ship.clone(ship);
 };
 
-Rules.needsMeteor = (ship) => {
-  // There are a max of three meteors on the ship.
-  const meteors = Object.keys(ship.layout).filter(id => ship.layout[id].indexOf('meteor') > -1);
-  return meteors.length < 3;
-};
+Rules.needsMeteor = ship => Rules.collect(ship, 'meteor').length < 3;
 
 Rules.canAddMeteor = (ship, tile) => {
   if (!Rules.playable(ship, tile)) {
@@ -124,11 +119,7 @@ Rules.addMeteor = (ship, tile) => {
   return Ship.clone(ship);
 };
 
-Rules.needsPod = (ship) => {
-  // There is only one escape pod on the ship.
-  const pods = Object.keys(ship.layout).filter(id => ship.layout[id].indexOf('pod') > -1);
-  return pods.length < 1;
-};
+Rules.needsPod = ship => Rules.collect(ship, 'pod').length < 1;
 
 Rules.canAddPod = (ship, tile) => {
   if (!Rules.playable(ship, tile)) {
@@ -146,6 +137,35 @@ Rules.canAddPod = (ship, tile) => {
 Rules.addPod = (ship, tile) => {
   if (Rules.canAddPod(ship, tile)) {
     return Ship.set(ship, tile, 'pod');
+  }
+
+  return Ship.clone(ship);
+};
+
+Rules.needsCorridor = (ship) => {
+  const halls = Rules.collect(ship, 'hall').length;
+  const corners = Rules.collect(ship, 'corner').length;
+  const tees = Rules.collect(ship, 'tee').length;
+  const junctions = Rules.collect(ship, 'junction').length;
+  return halls + corners + tees + junctions < 30;
+};
+
+Rules.canAddCorridor = (ship, tile, corridor) => {
+  if (!Rules.playable(ship, tile)) {
+    return false;
+  }
+
+  const corridors = ['hall', 'corner', 'tee', 'junction'];
+  if (corridors.indexOf(corridor) < 0) {
+    return false;
+  }
+
+  return Rules.needsCorridor(ship);
+};
+
+Rules.addCorridor = (ship, tile, corridor) => {
+  if (Rules.canAddCorridor(ship, tile, corridor)) {
+    return Ship.set(ship, tile, corridor);
   }
 
   return Ship.clone(ship);
@@ -187,55 +207,73 @@ Rules.rotate = (ship, tile) => {
 
 const Engine = {};
 
-Engine.tick = (ship, prev, tile) => {
+Engine.tick = (ship, prev, tile, corridor) => {
   let next = Rules.clear(ship, prev);
 
   if (prev === tile && Rules.possible(ship, tile)) {
     next = Rules.rotate(ship, tile);
-    return [next, prev];
+    return [next, prev, corridor];
   }
 
   if (Rules.needsMeteor(next)) {
     if (Rules.canAddMeteor(next, tile)) {
       next = Rules.addMeteor(next, tile);
-      return [next, tile];
+      return [next, tile, corridor];
     }
 
-    return [ship, prev];
+    return [ship, prev, corridor];
   }
 
   if (Rules.needsCrew(next)) {
     if (Rules.canAddCrew(next, tile)) {
       next = Rules.addCrew(next, tile);
-      return [next, tile];
+      return [next, tile, corridor];
     }
 
-    return [ship, prev];
+    return [ship, prev, corridor];
   }
 
   if (Rules.needsPod(next)) {
     if (Rules.canAddPod(next, tile)) {
       next = Rules.addPod(next, tile);
-      return [next, tile];
+      return [next, tile, corridor];
     }
 
-    return [ship, prev];
+    return [ship, prev, corridor];
   }
 
-  return [ship, prev];
+  if (Rules.needsCorridor(next)) {
+    if (Rules.canAddCorridor(next, tile, corridor)) {
+      next = Rules.addCorridor(next, tile, corridor);
+      return [next, tile, undefined];
+    }
+
+    return [ship, prev, corridor];
+  }
+
+  return [ship, prev, corridor];
 };
 
 (function game() {
   let ship = Ship.create();
   let picked;
+  let corridor;
 
   function reset() {
     ship = Ship.create();
     picked = undefined;
+    corridor = undefined;
   }
 
   function onShip(element) {
-    [ship, picked] = Engine.tick(ship, picked, element.unwrap().id);
+    if (!corridor) {
+      const corridors = ['hall', 'corner', 'tee', 'junction'];
+      corridor = corridors[Math.floor(Math.random() * corridors.length)];
+    }
+
+    const tile = element.unwrap().id;
+    [ship, picked, corridor] = Engine.tick(ship, picked, tile, corridor);
+
     Renderer.invalidate(ship);
   }
 
