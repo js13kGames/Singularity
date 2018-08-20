@@ -76,19 +76,14 @@ Rules.canAddCrew = (ship, tile) => {
     return false;
   }
 
-  // There are a max of four crew on the ship.
+  // There are a max of two crew on the ship.
   const crew = Object.keys(ship.layout).filter(id => ship.layout[id] === 'crew');
-  if (crew.length >= 4) {
+  if (crew.length >= 2) {
     return false;
   }
 
-  // Crew can not go in a corner.
-  if (Rules.isCorner(ship, tile)) {
-    return false;
-  }
-
-  // Crew must go on an edge.
-  return Rules.isEdge(ship, tile);
+  // Crew must go in the center.
+  return Rules.isCenter(ship, tile);
 };
 
 Rules.addCrew = (ship, tile) => {
