@@ -34,8 +34,7 @@ Renderer.render = (ship) => {
 
   Object.keys(ship.layout).forEach((id) => {
     const element = $(`#${id}`);
-    element.removeClass('meteor');
-    element.removeClass('crew');
+    element.removeClass('meteor crew pod');
     element.removeClass('north east south west');
     element.addClass(ship.layout[id]);
   });
@@ -142,6 +141,38 @@ Rules.addMeteor = (ship, tile) => {
   return Ship.clone(ship);
 };
 
+Rules.needsPod = (ship) => {
+  // There is only one escape pod on the ship.
+  const pods = Object.keys(ship.layout).filter(id => ship.layout[id].indexOf('pod') > -1);
+  return pods.length < 1;
+};
+
+Rules.canAddPod = (ship, tile) => {
+  if (!Rules.onGrid(ship, tile)) {
+    return false;
+  }
+
+  // Escape pods can only be added to an empty space on the ship.
+  if (ship.layout[tile] !== '') {
+    return false;
+  }
+
+  // Escape pods can only be added to the edge of the ship.
+  if (!Rules.isEdge(ship, tile)) {
+    return false;
+  }
+
+  return Rules.needsPod(ship);
+};
+
+Rules.addPod = (ship, tile) => {
+  if (Rules.canAddPod(ship, tile)) {
+    return Ship.set(ship, tile, 'pod');
+  }
+
+  return Ship.clone(ship);
+};
+
 Rules.clear = (ship, tile) => {
   if (Rules.onGrid(ship, tile)) {
     return Ship.set(ship, tile, '');
@@ -198,6 +229,15 @@ Engine.tick = (ship, prev, tile) => {
   if (Rules.needsCrew(next)) {
     if (Rules.canAddCrew(next, tile)) {
       next = Rules.addCrew(next, tile);
+      return [next, tile];
+    }
+
+    return [ship, prev];
+  }
+
+  if (Rules.needsPod(next)) {
+    if (Rules.canAddPod(next, tile)) {
+      next = Rules.addPod(next, tile);
       return [next, tile];
     }
 
