@@ -458,23 +458,33 @@ Renderer.invalidate = (ship, item) => {
 
 (function game() {
   let ship;
+  let prev;
   let next;
   let item;
 
   function reset() {
     ship = Ship.create();
+    prev = undefined;
     next = undefined;
     item = Engine.item(ship, item);
   }
 
   function onShip(element) {
     const tile = element.unwrap().id;
-    next = Engine.tick(ship, tile);
+
+    if (next !== undefined && prev === tile) {
+      next = Rules.rotate(next, tile);
+    } else {
+      next = Engine.tick(ship, tile);
+    }
+
+    prev = tile;
     Renderer.invalidate(next, item);
   }
 
   function onScan() {
     ship = next;
+    prev = undefined;
     next = undefined;
     item = Engine.item(ship, item);
     Renderer.invalidate(ship, item);
