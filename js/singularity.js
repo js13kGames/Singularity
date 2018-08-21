@@ -238,6 +238,10 @@ const AI = {};
 AI.playable = (ship, type) => {
   const valid = Object.keys(ship.layout).filter(id => ship.layout[id] === '');
 
+  if (type === 'wrench') {
+    return Rules.collect(ship, 'meteor');
+  }
+
   if (type === 'meteor') {
     return valid.filter(id => Rules.canAddMeteor(ship, id));
   }
@@ -260,13 +264,20 @@ AI.playable = (ship, type) => {
 
 const Engine = {};
 
-Engine.tick = (ship, prev, tile, corridor) => {
-  let next = Rules.clear(ship, prev);
+Engine.tick = (ship, prev, tile, item) => {
+  let next = Ship.clone(ship);
 
-  if (!Rules.repaired(ship)) {
-    next = Rules.repair(ship, tile);
-    return [next, prev];
+  if (Rules.repaired(next) && item === 'wrench') {
+    next = Ship.set(ship, prev, 'meteor');
   }
+
+  if (!Rules.repaired(next)) {
+    next = Rules.repair(next, tile);
+    return [next, tile];
+  }
+
+  /*
+  let next = Rules.clear(ship, prev);
 
   if (prev === tile && Rules.possible(ship, tile)) {
     next = Rules.rotate(ship, tile);
@@ -285,7 +296,7 @@ Engine.tick = (ship, prev, tile, corridor) => {
   if (Rules.needsCrew(next)) {
     if (Rules.canAddCrew(next, tile)) {
       next = Rules.addCrew(next, tile);
-      return [next, tile, corridor];
+      return [next, tile];
     }
 
     return [ship, prev];
@@ -301,31 +312,34 @@ Engine.tick = (ship, prev, tile, corridor) => {
   }
 
   if (Rules.needsCorridor(next)) {
-    if (Rules.canAddCorridor(next, tile, corridor)) {
-      next = Rules.addCorridor(next, tile, corridor);
+    if (Rules.canAddCorridor(next, tile, item)) {
+      next = Rules.addCorridor(next, tile, item);
       return [next, tile];
     }
 
     return [ship, prev];
   }
+  */
 
   return [ship, prev];
 };
 
-Engine.item = (ship) => {
-  const corridors = ['hall', 'corner', 'tee', 'junction'];
-  let item = D6.pick(corridors);
+Engine.item = (ship, item) => {
+  if (!Rules.repaired(ship)) {
+    return 'wrench';
+  }
 
   if (Rules.needsPod(ship)) {
-    item = 'pod';
+    return 'pod';
   }
 
   if (Rules.needsCrew(ship)) {
-    item = 'crew';
+    return 'crew';
   }
 
-  if (Rules.needsMeteor(ship)) {
-    item = 'meteor';
+  const corridors = ['hall', 'corner', 'tee', 'junction'];
+  if (corridors.indexOf(item) < 0) {
+    return D6.pick(corridors);
   }
 
   return item;
@@ -365,7 +379,7 @@ Renderer.invalidate = (ship, picked, item) => {
   function reset() {
     ship = Ship.create();
     picked = undefined;
-    item = Engine.item(ship);
+    item = Engine.item(ship, item);
   }
 
   function onShip(element) {
@@ -376,7 +390,7 @@ Renderer.invalidate = (ship, picked, item) => {
 
   function onScan() {
     picked = undefined;
-    item = Engine.item(ship);
+    item = Engine.item(ship, item);
     Renderer.invalidate(ship, picked, item);
   }
 
