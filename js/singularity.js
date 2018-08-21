@@ -338,6 +338,11 @@ Engine.tick = (ship, prev, tile, item) => {
     return [next, tile];
   }
 
+  if (prev && tile && prev === tile) {
+    next = Rules.rotate(ship, tile);
+    return [next, tile];
+  }
+
   if (Rules.escapable(next) && item === 'pod') {
     next = Ship.set(next, prev, '');
   }
