@@ -299,6 +299,10 @@ Rules.rotate = (ship, tile) => {
   const directions = ['north', 'east', 'south', 'west'];
   const type = ship.layout[tile].split(' ').filter(x => directions.indexOf(x) < 0).join(' ');
 
+  if (type === '' || type === 'meteor') {
+    return Ship.clone(ship);
+  }
+
   const east = ship.layout[tile].indexOf('east') > -1;
   if (east) {
     return Ship.set(ship, tile, `${type} south`);
