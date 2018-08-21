@@ -350,7 +350,7 @@ const Engine = {};
 Engine.tick = (ship, prev, tile, item) => {
   let next = Ship.clone(ship);
 
-  if (Rules.repaired(next) && item === 'wrench') {
+  if (prev !== undefined && item === 'wrench' && Rules.repaired(next)) {
     next = Ship.set(ship, prev, 'meteor');
   }
 
@@ -359,12 +359,12 @@ Engine.tick = (ship, prev, tile, item) => {
     return [next, tile];
   }
 
-  if (prev && tile && prev === tile) {
+  if (prev !== undefined && prev === tile) {
     next = Rules.rotate(ship, tile);
     return [next, tile];
   }
 
-  if (Rules.podded(next) && item === 'pod') {
+  if (prev !== undefined && item === 'pod' && Rules.podded(next)) {
     next = Ship.set(next, prev, '');
   }
 
@@ -373,7 +373,7 @@ Engine.tick = (ship, prev, tile, item) => {
     return [next, tile];
   }
 
-  if (Rules.crewable(next) && item === 'crew') {
+  if (prev !== undefined && item === 'crew' && Rules.crewed(next)) {
     next = Ship.set(next, prev, '');
   }
 
@@ -381,6 +381,8 @@ Engine.tick = (ship, prev, tile, item) => {
     next = Rules.crew(next, tile);
     return [next, tile];
   }
+
+  return [next, tile];
 
   /*
   let next = Rules.clear(ship, prev);
@@ -426,8 +428,6 @@ Engine.tick = (ship, prev, tile, item) => {
     return [ship, prev];
   }
   */
-
-  return [ship, prev];
 };
 
 Engine.item = (ship, item) => {
