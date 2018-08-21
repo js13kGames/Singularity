@@ -33,28 +33,6 @@ Ship.set = (ship, tile, value) => {
   return copy;
 };
 
-const Renderer = {};
-
-Renderer.render = (ship, item) => {
-  const $ = Root.jQuery;
-
-  Object.keys(ship.layout).forEach((id) => {
-    const element = $(`#${id}`);
-    element.removeClass('meteor crew pod');
-    element.removeClass('north east south west');
-    element.removeClass('hall corner tee junction');
-    element.addClass(ship.layout[id]);
-  });
-
-  $('#scan').removeClass('meteor crew pod');
-  $('#scan').removeClass('hall corner tee junction');
-  $('#scan').addClass(item);
-};
-
-Renderer.invalidate = (ship, item) => {
-  requestAnimationFrame(() => Renderer.render(ship, item));
-};
-
 const Rules = {};
 
 Rules.distance = (ship, a, b) => {
@@ -231,6 +209,31 @@ Rules.rotate = (ship, tile) => {
   return Ship.set(ship, tile, `${type} east`);
 };
 
+const AI = {};
+
+AI.playable = (ship, type) => {
+  const valid = Object.keys(ship.layout).filter(id => ship.layout[id] === '');
+
+  if (type === 'meteor') {
+    return valid.filter(id => Rules.canAddMeteor(ship, id));
+  }
+
+  if (type === 'crew') {
+    return valid.filter(id => Rules.canAddCrew(ship, id));
+  }
+
+  if (type === 'pod') {
+    return valid.filter(id => Rules.canAddPod(ship, id));
+  }
+
+  const corridors = ['hall', 'corner', 'tee', 'junction'];
+  if (corridors.indexOf(type) > -1) {
+    return valid.filter(id => Rules.canAddCorridor(ship, id, type));
+  }
+
+  return valid;
+};
+
 const Engine = {};
 
 Engine.tick = (ship, prev, tile, corridor) => {
@@ -297,6 +300,32 @@ Engine.item = (ship) => {
   }
 
   return item;
+};
+
+const Renderer = {};
+
+Renderer.render = (ship, item) => {
+  const $ = Root.jQuery;
+
+  Object.keys(ship.layout).forEach((id) => {
+    const element = $(`#${id}`);
+    element.removeClass('meteor crew pod');
+    element.removeClass('north east south west');
+    element.removeClass('hall corner tee junction');
+    element.removeClass('playable');
+    element.addClass(ship.layout[id]);
+  });
+
+  const playable = AI.playable(ship, item);
+  playable.forEach(id => $(`#${id}`).addClass('playable'));
+
+  $('#scan').removeClass('meteor crew pod');
+  $('#scan').removeClass('hall corner tee junction');
+  $('#scan').addClass(item);
+};
+
+Renderer.invalidate = (ship, item) => {
+  requestAnimationFrame(() => Renderer.render(ship, item));
 };
 
 (function game() {
@@ -466,5 +495,5 @@ Engine.item = (ship) => {
 }());
 
 if (typeof module === 'object') {
-  module.exports = { Ship, Rules };
+  module.exports = { Ship, Rules, AI };
 }

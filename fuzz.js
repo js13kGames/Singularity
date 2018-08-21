@@ -1,31 +1,6 @@
 #!/usr/bin/env node
 
-const { Ship, Rules } = require('./js/singularity');
-
-const AI = {};
-
-AI.playable = (ship, type) => {
-  const valid = Object.keys(ship.layout).filter(id => ship.layout[id] === '');
-
-  if (type === 'meteor') {
-    return valid.filter(id => Rules.canAddMeteor(ship, id));
-  }
-
-  if (type === 'crew') {
-    return valid.filter(id => Rules.canAddCrew(ship, id));
-  }
-
-  if (type === 'pod') {
-    return valid.filter(id => Rules.canAddPod(ship, id));
-  }
-
-  const corridors = ['hall', 'corner', 'tee', 'junction'];
-  if (corridors.indexOf(type) > -1) {
-    return valid.filter(id => Rules.canAddCorridor(ship, id, type));
-  }
-
-  return valid;
-};
+const { Ship, Rules, AI } = require('./js/singularity');
 
 AI.play = (ship, tile, type) => {
   if (type === 'meteor') {
