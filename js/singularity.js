@@ -494,10 +494,10 @@ Renderer.invalidate = (ship, item) => {
     Renderer.invalidate(ship, item);
   }
 
-  function tileHTML() {
+  function tileHTML(count) {
     let html = '';
 
-    for (let i = 0; i < 9; i += 1) {
+    for (let i = 0; i < count; i += 1) {
       html += '<div></div>';
     }
 
@@ -514,7 +514,7 @@ Renderer.invalidate = (ship, item) => {
     ranks.forEach((rank) => {
       files.forEach((file) => {
         html += `<div id="${file}${rank}">`;
-        html += tileHTML();
+        html += tileHTML(9);
         html += '</div>';
       });
     });
@@ -522,11 +522,58 @@ Renderer.invalidate = (ship, item) => {
     $('#ship').html(html);
   }
 
+  function drawCrew() {
+    const $ = Root.jQuery;
+    let html;
+    let file;
+    let rank;
+
+    const files = ship.files.slice();
+    const ranks = ship.ranks.slice().reverse();
+
+    html = '';
+    rank = ranks[0];
+    files.forEach((file) => {
+      html += `<div id="north-${file}${rank}">`;
+      html += tileHTML(3);
+      html += '</div>';
+    });
+    $('#crew-north').html(html);
+
+    html = '';
+    rank = ranks[ranks.length - 1];
+    files.forEach((file) => {
+      html += `<div id="south-${file}${rank}">`;
+      html += tileHTML(3);
+      html += '</div>';
+    });
+    $('#crew-south').html(html);
+
+    html = '';
+    file = files[0];
+    ranks.forEach((rank) => {
+      html += `<div id="west-${file}${rank}">`;
+      html += tileHTML(3);
+      html += '</div>';
+    });
+    $('#crew-west').html(html);
+
+    html = '';
+    file = files[files.length - 1];
+    ranks.forEach((rank) => {
+      html += `<div id="east-${file}${rank}">`;
+      html += tileHTML(3);
+      html += '</div>';
+    });
+    $('#crew-east').html(html);
+  }
+
   function play() {
     const $ = Root.jQuery;
 
     reset();
     drawShip();
+    drawCrew();
 
     ship.files.forEach((file) => {
       ship.ranks.forEach((rank) => {
@@ -534,7 +581,7 @@ Renderer.invalidate = (ship, item) => {
       });
     });
 
-    $('#scan').html(tileHTML());
+    $('#scan').html(tileHTML(9));
     $('#scan').click(onScan);
 
     Renderer.invalidate(ship, item);
