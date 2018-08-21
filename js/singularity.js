@@ -117,7 +117,7 @@ Rules.repair = (ship, tile) => {
   return Ship.set(ship, tile, '');
 };
 
-Rules.escapable = (ship) => Rules.collect(ship, 'pod').length > 0;
+Rules.podded = (ship) => Rules.collect(ship, 'pod').length > 0;
 
 Rules.poddable = (ship) => {
   const meteors = Rules.collect(ship, 'meteor');
@@ -128,7 +128,7 @@ Rules.poddable = (ship) => {
 };
 
 Rules.pod = (ship, tile) => {
-  if (Rules.escapable(ship)) {
+  if (Rules.podded(ship)) {
     return Ship.clone(ship);
   }
 
@@ -138,6 +138,27 @@ Rules.pod = (ship, tile) => {
   }
 
   return Ship.set(ship, tile, 'pod');
+};
+
+Rules.crewed = (ship) => Rules.collect(ship, 'crew').length >= 4;
+
+Rules.crewable = (ship) => {
+  const empty = Object.keys(ship.layout).filter(id => ship.layout[id] === '');
+
+  return empty;
+};
+
+Rules.crew = (ship, tile) => {
+  if (Rules.crewed(ship)) {
+    return Ship.clone(ship);
+  }
+
+  const crewable = Rules.crewable(ship);
+  if (crewable.indexOf(tile) < 0) {
+    return Ship.clone(ship);
+  }
+
+  return Ship.set(ship, tile, 'crew');
 };
 
 Rules.isCenter = (ship, tile) => {
@@ -309,7 +330,7 @@ AI.playable = (ship, type) => {
   }
 
   if (type === 'crew') {
-    return valid.filter(id => Rules.canAddCrew(ship, id));
+    return Rules.crewable(ship);
   }
 
   if (type === 'pod') {
@@ -343,14 +364,24 @@ Engine.tick = (ship, prev, tile, item) => {
     return [next, tile];
   }
 
-  if (Rules.escapable(next) && item === 'pod') {
+  if (Rules.podded(next) && item === 'pod') {
     next = Ship.set(next, prev, '');
   }
 
-  if (!Rules.escapable(next)) {
+  if (!Rules.podded(next)) {
     next = Rules.pod(next, tile);
     return [next, tile];
   }
+
+  if (Rules.crewable(next) && item === 'crew') {
+    next = Ship.set(next, prev, '');
+  }
+
+  if (!Rules.crewed(next)) {
+    next = Rules.crew(next, tile);
+    return [next, tile];
+  }
+
   /*
   let next = Rules.clear(ship, prev);
 
