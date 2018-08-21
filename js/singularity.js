@@ -4,6 +4,13 @@ const Root = (typeof self === 'object' && self.self === self && self)
   || this;
 /* eslint-enable no-restricted-globals */
 
+const D6 = {};
+
+D6.pick = (list) => {
+  const index = Math.floor(Math.random() * list.length);
+  return list[index];
+};
+
 const Ship = {};
 
 Ship.create = () => {
@@ -16,6 +23,12 @@ Ship.create = () => {
     ranks.forEach((rank) => {
       layout[file + rank] = '';
     });
+  });
+
+  const skip = D6.pick(ranks);
+  ranks.filter(id => id !== skip).forEach((rank) => {
+    const file = D6.pick(files);
+    layout[file + rank] = 'meteor';
   });
 
   return {
@@ -285,7 +298,7 @@ Engine.tick = (ship, prev, tile, corridor) => {
 
 Engine.item = (ship) => {
   const corridors = ['hall', 'corner', 'tee', 'junction'];
-  let item = corridors[Math.floor(Math.random() * corridors.length)];
+  let item = D6.pick(corridors);
 
   if (Rules.needsPod(ship)) {
     item = 'pod';
