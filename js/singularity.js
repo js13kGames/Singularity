@@ -25,8 +25,7 @@ Ship.create = () => {
     });
   });
 
-  const skip = D6.pick(ranks);
-  ranks.filter(id => id !== skip).forEach((rank) => {
+  ranks.forEach((rank) => {
     const file = D6.pick(files);
     layout[file + rank] = 'meteor';
   });
@@ -66,6 +65,18 @@ Rules.possible = (ship, tile) => ship && tile && Object.keys(ship.layout).indexO
 Rules.playable = (ship, tile) => Rules.possible(ship, tile) && ship.layout[tile] === '';
 
 Rules.collect = (ship, type) => Object.keys(ship.layout).filter(id => ship.layout[id].indexOf(type) > -1);
+
+Rules.repaired = (ship) => Rules.collect(ship, 'meteor').length <= 5;
+
+Rules.repair = (ship, tile) => {
+  const meteors = Rules.collect(ship, 'meteor');
+
+  if (meteors.length > 5 && meteors.indexOf(tile) > -1) {
+    return Ship.set(ship, tile, '');
+  }
+
+  return Ship.clone(ship);
+};
 
 Rules.isCenter = (ship, tile) => {
   const file = tile.slice(0, 1);
@@ -251,6 +262,11 @@ const Engine = {};
 
 Engine.tick = (ship, prev, tile, corridor) => {
   let next = Rules.clear(ship, prev);
+
+  if (!Rules.repaired(ship)) {
+    next = Rules.repair(ship, tile);
+    return [next, prev];
+  }
 
   if (prev === tile && Rules.possible(ship, tile)) {
     next = Rules.rotate(ship, tile);
