@@ -304,7 +304,7 @@ Engine.item = (ship) => {
 
 const Renderer = {};
 
-Renderer.render = (ship, item) => {
+Renderer.render = (ship, picked, item) => {
   const $ = Root.jQuery;
 
   Object.keys(ship.layout).forEach((id) => {
@@ -316,7 +316,7 @@ Renderer.render = (ship, item) => {
     element.addClass(ship.layout[id]);
   });
 
-  const playable = AI.playable(ship, item);
+  const playable = AI.playable(Rules.clear(ship, picked), item);
   playable.forEach(id => $(`#${id}`).addClass('playable'));
 
   $('#scan').removeClass('meteor crew pod');
@@ -324,8 +324,8 @@ Renderer.render = (ship, item) => {
   $('#scan').addClass(item);
 };
 
-Renderer.invalidate = (ship, item) => {
-  requestAnimationFrame(() => Renderer.render(ship, item));
+Renderer.invalidate = (ship, picked, item) => {
+  requestAnimationFrame(() => Renderer.render(ship, picked, item));
 };
 
 (function game() {
@@ -342,13 +342,13 @@ Renderer.invalidate = (ship, item) => {
   function onShip(element) {
     const tile = element.unwrap().id;
     [ship, picked] = Engine.tick(ship, picked, tile, item);
-    Renderer.invalidate(ship, item);
+    Renderer.invalidate(ship, picked, item);
   }
 
   function onScan() {
     picked = undefined;
     item = Engine.item(ship);
-    Renderer.invalidate(ship, item);
+    Renderer.invalidate(ship, picked, item);
   }
 
   function tileHTML() {
@@ -394,7 +394,7 @@ Renderer.invalidate = (ship, item) => {
     $('#scan').html(tileHTML());
     $('#scan').click(onScan);
 
-    Renderer.invalidate(ship, item);
+    Renderer.invalidate(ship, picked, item);
   }
 
   Root.onload = play;
