@@ -66,16 +66,78 @@ Rules.playable = (ship, tile) => Rules.possible(ship, tile) && ship.layout[tile]
 
 Rules.collect = (ship, type) => Object.keys(ship.layout).filter(id => ship.layout[id].indexOf(type) > -1);
 
-Rules.repaired = (ship) => Rules.collect(ship, 'meteor').length <= 5;
+Rules.orthogonal = (ship, tile) => {
+  const ofile = tile.slice(0, 1);
+  const orank = tile.slice(-1);
 
-Rules.repair = (ship, tile) => {
-  const meteors = Rules.collect(ship, 'meteor');
+  const ifile = ship.files.indexOf(ofile);
+  const irank = ship.ranks.indexOf(orank);
 
-  if (meteors.length > 5 && meteors.indexOf(tile) > -1) {
-    return Ship.set(ship, tile, '');
+  const tiles = [];
+
+  let file, rank;
+
+  if (ifile - 1 >= 0 && ifile - 1 < ship.files.length) {
+    file = ship.files[ifile - 1];
+    tiles.push(`${file}${orank}`);
   }
 
-  return Ship.clone(ship);
+  if (ifile + 1 >= 0 && ifile - 1 < ship.files.length) {
+    file = ship.files[ifile + 1];
+    tiles.push(`${file}${orank}`);
+  }
+
+  if (irank - 1 >= 0 && irank - 1 < ship.ranks.length) {
+    rank = ship.ranks[irank - 1];
+    tiles.push(`${ofile}${rank}`);
+  }
+
+  if (irank + 1 >= 0 && irank + 1 < ship.ranks.length) {
+    rank = ship.ranks[irank + 1];
+    tiles.push(`${ofile}${rank}`);
+  }
+
+  return tiles;
+};
+
+Rules.repaired = (ship) => Rules.collect(ship, 'meteor').length <= 5;
+
+Rules.repairable = (ship) => Rules.collect(ship, 'meteor');
+
+Rules.repair = (ship, tile) => {
+  if (Rules.repaired(ship)) {
+    return Ship.clone(ship);
+  }
+
+  const repairable = Rules.repairable(ship);
+  if (repairable.indexOf(tile) < 0) {
+    return Ship.clone(ship);
+  }
+
+  return Ship.set(ship, tile, '');
+};
+
+Rules.escapable = (ship) => Rules.collect(ship, 'pod').length > 0;
+
+Rules.poddable = (ship) => {
+  const meteors = Rules.collect(ship, 'meteor');
+  const orthogonal = [].concat.apply([], meteors.map(id => Rules.orthogonal(ship, id)));
+  const empty = orthogonal.filter(id => ship.layout[id] === '');
+
+  return empty;
+};
+
+Rules.pod = (ship, tile) => {
+  if (Rules.escapable(ship)) {
+    return Ship.clone(ship);
+  }
+
+  const poddable = Rules.poddable(ship);
+  if (poddable.indexOf(tile) < 0) {
+    return Ship.clone(ship);
+  }
+
+  return Ship.set(ship, tile, 'pod');
 };
 
 Rules.isCenter = (ship, tile) => {
@@ -239,7 +301,7 @@ AI.playable = (ship, type) => {
   const valid = Object.keys(ship.layout).filter(id => ship.layout[id] === '');
 
   if (type === 'wrench') {
-    return Rules.collect(ship, 'meteor');
+    return Rules.repairable(ship);
   }
 
   if (type === 'meteor') {
@@ -251,7 +313,7 @@ AI.playable = (ship, type) => {
   }
 
   if (type === 'pod') {
-    return valid.filter(id => Rules.canAddPod(ship, id));
+    return Rules.poddable(ship);
   }
 
   const corridors = ['hall', 'corner', 'tee', 'junction'];
@@ -276,6 +338,14 @@ Engine.tick = (ship, prev, tile, item) => {
     return [next, tile];
   }
 
+  if (Rules.escapable(next) && item === 'pod') {
+    next = Ship.set(next, prev, '');
+  }
+
+  if (!Rules.escapable(next)) {
+    next = Rules.pod(next, tile);
+    return [next, tile];
+  }
   /*
   let next = Rules.clear(ship, prev);
 
@@ -359,7 +429,7 @@ Renderer.render = (ship, picked, item) => {
     element.addClass(ship.layout[id]);
   });
 
-  const playable = AI.playable(Rules.clear(ship, picked), item);
+  const playable = AI.playable(ship, item);
   playable.forEach(id => $(`#${id}`).addClass('playable'));
 
   $('#scan').removeClass('meteor crew pod');
