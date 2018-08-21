@@ -75,7 +75,8 @@ Rules.orthogonal = (ship, tile) => {
 
   const tiles = [];
 
-  let file, rank;
+  let file;
+  let rank;
 
   if (ifile - 1 >= 0 && ifile - 1 < ship.files.length) {
     file = ship.files[ifile - 1];
@@ -100,9 +101,9 @@ Rules.orthogonal = (ship, tile) => {
   return tiles;
 };
 
-Rules.repaired = (ship) => Rules.collect(ship, 'meteor').length <= 5;
+Rules.repaired = ship => Rules.collect(ship, 'meteor').length <= 5;
 
-Rules.repairable = (ship) => Rules.collect(ship, 'meteor');
+Rules.repairable = ship => Rules.collect(ship, 'meteor');
 
 Rules.repair = (ship, tile) => {
   if (Rules.repaired(ship)) {
@@ -117,7 +118,7 @@ Rules.repair = (ship, tile) => {
   return Ship.set(ship, tile, '');
 };
 
-Rules.podded = (ship) => Rules.collect(ship, 'pod').length > 0;
+Rules.podded = ship => Rules.collect(ship, 'pod').length > 0;
 
 Rules.poddable = (ship) => {
   const meteors = Rules.collect(ship, 'meteor');
@@ -140,7 +141,7 @@ Rules.pod = (ship, tile) => {
   return Ship.set(ship, tile, 'pod');
 };
 
-Rules.crewed = (ship) => Rules.collect(ship, 'crew').length >= 4;
+Rules.crewed = ship => Rules.collect(ship, 'crew').length >= 4;
 
 Rules.crewable = (ship) => {
   const empty = Object.keys(ship.layout).filter(id => ship.layout[id] === '');
@@ -347,42 +348,20 @@ AI.playable = (ship, type) => {
 
 const Engine = {};
 
-Engine.tick = (ship, prev, tile, item) => {
-  let next = Ship.clone(ship);
-
-  if (prev !== undefined && item === 'wrench' && Rules.repaired(next)) {
-    next = Ship.set(ship, prev, 'meteor');
+Engine.tick = (ship, tile) => {
+  if (!Rules.repaired(ship)) {
+    return Rules.repair(ship, tile);
   }
 
-  if (!Rules.repaired(next)) {
-    next = Rules.repair(next, tile);
-    return [next, tile];
+  if (!Rules.podded(ship)) {
+    return Rules.pod(ship, tile);
   }
 
-  if (prev !== undefined && prev === tile) {
-    next = Rules.rotate(ship, tile);
-    return [next, tile];
+  if (!Rules.crewed(ship)) {
+    return Rules.crew(ship, tile);
   }
 
-  if (prev !== undefined && item === 'pod' && Rules.podded(next)) {
-    next = Ship.set(next, prev, '');
-  }
-
-  if (!Rules.podded(next)) {
-    next = Rules.pod(next, tile);
-    return [next, tile];
-  }
-
-  if (prev !== undefined && item === 'crew' && Rules.crewed(next)) {
-    next = Ship.set(next, prev, '');
-  }
-
-  if (!Rules.crewed(next)) {
-    next = Rules.crew(next, tile);
-    return [next, tile];
-  }
-
-  return [next, tile];
+  return Ship.clone(ship);
 
   /*
   let next = Rules.clear(ship, prev);
@@ -435,11 +414,11 @@ Engine.item = (ship, item) => {
     return 'wrench';
   }
 
-  if (Rules.needsPod(ship)) {
+  if (!Rules.podded(ship)) {
     return 'pod';
   }
 
-  if (Rules.needsCrew(ship)) {
+  if (!Rules.crewed(ship)) {
     return 'crew';
   }
 
@@ -453,7 +432,7 @@ Engine.item = (ship, item) => {
 
 const Renderer = {};
 
-Renderer.render = (ship, picked, item) => {
+Renderer.render = (ship, item) => {
   const $ = Root.jQuery;
 
   Object.keys(ship.layout).forEach((id) => {
@@ -473,31 +452,32 @@ Renderer.render = (ship, picked, item) => {
   $('#scan').addClass(item);
 };
 
-Renderer.invalidate = (ship, picked, item) => {
-  requestAnimationFrame(() => Renderer.render(ship, picked, item));
+Renderer.invalidate = (ship, item) => {
+  requestAnimationFrame(() => Renderer.render(ship, item));
 };
 
 (function game() {
   let ship;
-  let picked;
+  let next;
   let item;
 
   function reset() {
     ship = Ship.create();
-    picked = undefined;
+    next = undefined;
     item = Engine.item(ship, item);
   }
 
   function onShip(element) {
     const tile = element.unwrap().id;
-    [ship, picked] = Engine.tick(ship, picked, tile, item);
-    Renderer.invalidate(ship, picked, item);
+    next = Engine.tick(ship, tile);
+    Renderer.invalidate(next, item);
   }
 
   function onScan() {
-    picked = undefined;
+    ship = next;
+    next = undefined;
     item = Engine.item(ship, item);
-    Renderer.invalidate(ship, picked, item);
+    Renderer.invalidate(ship, item);
   }
 
   function tileHTML() {
@@ -543,7 +523,7 @@ Renderer.invalidate = (ship, picked, item) => {
     $('#scan').html(tileHTML());
     $('#scan').click(onScan);
 
-    Renderer.invalidate(ship, picked, item);
+    Renderer.invalidate(ship, item);
   }
 
   Root.onload = play;
