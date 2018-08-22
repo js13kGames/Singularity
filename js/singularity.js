@@ -249,30 +249,6 @@ Rules.isCenter = (ship, tile) => {
 
 Rules.isEdge = (ship, tile) => !Rules.isCenter(ship, tile);
 
-Rules.needsMeteor = ship => Rules.collect(ship, 'meteor').length < 3;
-
-Rules.canAddMeteor = (ship, tile) => {
-  if (!Rules.playable(ship, tile)) {
-    return false;
-  }
-
-  if (!Rules.needsMeteor(ship)) {
-    return false;
-  }
-
-  const meteors = Rules.collect(ship, 'meteor');
-  const close = meteors.filter(id => Rules.distance(ship, tile, id) < 2);
-  return close.length < 1;
-};
-
-Rules.addMeteor = (ship, tile) => {
-  if (Rules.canAddMeteor(ship, tile)) {
-    return Ship.set(ship, tile, 'meteor');
-  }
-
-  return Ship.clone(ship);
-};
-
 Rules.needsCrew = ship => Rules.collect(ship, 'crew').length < 2;
 
 Rules.canAddCrew = (ship, tile) => {
@@ -405,10 +381,6 @@ AI.playable = (ship, type) => {
     return Rules.repairable(ship);
   }
 
-  if (type === 'meteor') {
-    return valid.filter(id => Rules.canAddMeteor(ship, id));
-  }
-
   if (type === 'north') {
     return Rules.crewable(ship, 'north');
   }
@@ -453,51 +425,6 @@ Engine.tick = (ship, tile) => {
   }
 
   return Ship.clone(ship);
-
-  /*
-  let next = Rules.clear(ship, prev);
-
-  if (prev === tile && Rules.possible(ship, tile)) {
-    next = Rules.rotate(ship, tile);
-    return [next, prev];
-  }
-
-  if (Rules.needsMeteor(next)) {
-    if (Rules.canAddMeteor(next, tile)) {
-      next = Rules.addMeteor(next, tile);
-      return [next, tile];
-    }
-
-    return [ship, prev];
-  }
-
-  if (Rules.needsCrew(next)) {
-    if (Rules.canAddCrew(next, tile)) {
-      next = Rules.addCrew(next, tile);
-      return [next, tile];
-    }
-
-    return [ship, prev];
-  }
-
-  if (Rules.needsPod(next)) {
-    if (Rules.canAddPod(next, tile)) {
-      next = Rules.addPod(next, tile);
-      return [next, tile];
-    }
-
-    return [ship, prev];
-  }
-
-  if (Rules.needsCorridor(next)) {
-    if (Rules.canAddCorridor(next, tile, item)) {
-      next = Rules.addCorridor(next, tile, item);
-      return [next, tile];
-    }
-
-    return [ship, prev];
-  }
-  */
 };
 
 Engine.item = (ship, item) => {
