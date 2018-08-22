@@ -141,25 +141,100 @@ Rules.pod = (ship, tile) => {
   return Ship.set(ship, tile, 'pod');
 };
 
-Rules.crewed = ship => Rules.collect(ship, 'crew').length >= 4;
+Rules.edges = (ship, direction) => {
+  const files = ship.files.slice();
+  const ranks = ship.ranks.slice().reverse();
 
-Rules.crewable = (ship) => {
+  let file;
+  let rank;
+
+  if (direction === 'north') {
+    [rank] = ranks;
+    return files.map(f => f + rank);
+  }
+
+  if (direction === 'east') {
+    file = files[files.length - 1];
+    return ranks.map(r => file + r);
+  }
+
+  if (direction === 'south') {
+    rank = ranks[ranks.length - 1];
+    return files.map(f => f + rank);
+  }
+
+  if (direction === 'west') {
+    [file] = files;
+    return ranks.map(r => file + r);
+  }
+
+  return [];
+};
+
+Rules.crewed = ship => !!ship.north && !!ship.east && !!ship.south && !!ship.west;
+
+Rules.crewable = (ship, direction) => {
   const empty = Object.keys(ship.layout).filter(id => ship.layout[id] === '');
 
-  return empty;
+  if (direction === 'north') {
+    return Rules.edges(ship, 'north').filter(id => empty.indexOf(id) > -1);
+  }
+
+  if (direction === 'east') {
+    return Rules.edges(ship, 'east').filter(id => empty.indexOf(id) > -1);
+  }
+
+  if (direction === 'south') {
+    return Rules.edges(ship, 'south').filter(id => empty.indexOf(id) > -1);
+  }
+
+  if (direction === 'west') {
+    return Rules.edges(ship, 'west').filter(id => empty.indexOf(id) > -1);
+  }
+
+  return [];
 };
 
 Rules.crew = (ship, tile) => {
+  const copy = Ship.clone(ship);
+
   if (Rules.crewed(ship)) {
-    return Ship.clone(ship);
+    return copy;
   }
 
-  const crewable = Rules.crewable(ship);
-  if (crewable.indexOf(tile) < 0) {
-    return Ship.clone(ship);
+  const north = Rules.crewable(ship, 'north');
+  if (!!!copy.north) {
+    if (north.indexOf(tile) > -1) {
+      copy.north = tile;
+    }
+    return copy;
   }
 
-  return Ship.set(ship, tile, 'crew');
+  const east = Rules.crewable(ship, 'east');
+  if (!!!copy.east) {
+    if (east.indexOf(tile) > -1) {
+      copy.east = tile;
+    }
+    return copy;
+  }
+
+  const south = Rules.crewable(ship, 'south');
+  if (!!!copy.south) {
+    if (south.indexOf(tile) > -1) {
+      copy.south = tile;
+    }
+    return copy;
+  }
+
+  const west = Rules.crewable(ship, 'west');
+  if (!!!copy.west) {
+    if (west.indexOf(tile) > -1) {
+      copy.west = tile;
+    }
+    return copy;
+  }
+
+  return copy;
 };
 
 Rules.isCenter = (ship, tile) => {
@@ -334,8 +409,20 @@ AI.playable = (ship, type) => {
     return valid.filter(id => Rules.canAddMeteor(ship, id));
   }
 
-  if (type === 'crew') {
-    return Rules.crewable(ship);
+  if (type === 'north') {
+    return Rules.crewable(ship, 'north');
+  }
+
+  if (type === 'east') {
+    return Rules.crewable(ship, 'east');
+  }
+
+  if (type === 'south') {
+    return Rules.crewable(ship, 'south');
+  }
+
+  if (type === 'west') {
+    return Rules.crewable(ship, 'west');
   }
 
   if (type === 'pod') {
@@ -422,8 +509,20 @@ Engine.item = (ship, item) => {
     return 'pod';
   }
 
-  if (!Rules.crewed(ship)) {
-    return 'crew';
+  if (!!!ship.north) {
+    return 'north';
+  }
+
+  if (!!!ship.east) {
+    return 'east';
+  }
+
+  if (!!!ship.south) {
+    return 'south';
+  }
+
+  if (!!!ship.west) {
+    return 'west';
   }
 
   const corridors = ['hall', 'corner', 'tee', 'junction'];
@@ -447,6 +546,16 @@ Renderer.render = (ship, item) => {
     element.removeClass('playable');
     element.addClass(ship.layout[id]);
   });
+
+  ['north', 'east', 'south', 'west'].forEach((direction) => {
+    const crew = Rules.edges(ship, direction);
+    crew.forEach(id => $(`#${direction}-${id}`).removeClass('crew north east south west'));
+  });
+
+  $(`#north-${ship.north}`).addClass('crew north');
+  $(`#east-${ship.east}`).addClass('crew east');
+  $(`#south-${ship.south}`).addClass('crew south');
+  $(`#west-${ship.west}`).addClass('crew west');
 
   const playable = AI.playable(ship, item);
   playable.forEach(id => $(`#${id}`).addClass('playable'));
@@ -525,43 +634,35 @@ Renderer.invalidate = (ship, item) => {
   function drawCrew() {
     const $ = Root.jQuery;
     let html;
-    let file;
-    let rank;
 
-    const files = ship.files.slice();
-    const ranks = ship.ranks.slice().reverse();
 
     html = '';
-    rank = ranks[0];
-    files.forEach((file) => {
-      html += `<div id="north-${file}${rank}">`;
+    Rules.edges(ship, 'north').forEach((id) => {
+      html += `<div id="north-${id}">`;
       html += tileHTML(3);
       html += '</div>';
     });
     $('#crew-north').html(html);
 
     html = '';
-    rank = ranks[ranks.length - 1];
-    files.forEach((file) => {
-      html += `<div id="south-${file}${rank}">`;
+    Rules.edges(ship, 'south').forEach((id) => {
+      html += `<div id="south-${id}">`;
       html += tileHTML(3);
       html += '</div>';
     });
     $('#crew-south').html(html);
 
     html = '';
-    file = files[0];
-    ranks.forEach((rank) => {
-      html += `<div id="west-${file}${rank}">`;
+    Rules.edges(ship, 'west').forEach((id) => {
+      html += `<div id="west-${id}">`;
       html += tileHTML(3);
       html += '</div>';
     });
     $('#crew-west').html(html);
 
     html = '';
-    file = files[files.length - 1];
-    ranks.forEach((rank) => {
-      html += `<div id="east-${file}${rank}">`;
+    Rules.edges(ship, 'east').forEach((id) => {
+      html += `<div id="east-${id}">`;
       html += tileHTML(3);
       html += '</div>';
     });
