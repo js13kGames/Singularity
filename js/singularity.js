@@ -203,7 +203,7 @@ Rules.crew = (ship, tile) => {
   }
 
   const north = Rules.crewable(ship, 'north');
-  if (!!!copy.north) {
+  if (copy.north === undefined) {
     if (north.indexOf(tile) > -1) {
       copy.north = tile;
     }
@@ -211,7 +211,7 @@ Rules.crew = (ship, tile) => {
   }
 
   const east = Rules.crewable(ship, 'east');
-  if (!!!copy.east) {
+  if (copy.east === undefined) {
     if (east.indexOf(tile) > -1) {
       copy.east = tile;
     }
@@ -219,7 +219,7 @@ Rules.crew = (ship, tile) => {
   }
 
   const south = Rules.crewable(ship, 'south');
-  if (!!!copy.south) {
+  if (copy.south === undefined) {
     if (south.indexOf(tile) > -1) {
       copy.south = tile;
     }
@@ -227,7 +227,7 @@ Rules.crew = (ship, tile) => {
   }
 
   const west = Rules.crewable(ship, 'west');
-  if (!!!copy.west) {
+  if (copy.west === undefined) {
     if (west.indexOf(tile) > -1) {
       copy.west = tile;
     }
@@ -436,19 +436,19 @@ Engine.item = (ship, item) => {
     return 'pod';
   }
 
-  if (!!!ship.north) {
+  if (ship.north === undefined) {
     return 'north';
   }
 
-  if (!!!ship.east) {
+  if (ship.east === undefined) {
     return 'east';
   }
 
-  if (!!!ship.south) {
+  if (ship.south === undefined) {
     return 'south';
   }
 
-  if (!!!ship.west) {
+  if (ship.west === undefined) {
     return 'west';
   }
 
@@ -523,11 +523,13 @@ Renderer.invalidate = (ship, item) => {
   }
 
   function onScan() {
-    ship = next;
-    prev = undefined;
-    next = undefined;
-    item = Engine.item(ship, item);
-    Renderer.invalidate(ship, item);
+    if (next !== undefined) {
+      ship = next;
+      prev = undefined;
+      next = undefined;
+      item = Engine.item(ship, item);
+      Renderer.invalidate(ship, item);
+    }
   }
 
   function tileHTML(count) {
