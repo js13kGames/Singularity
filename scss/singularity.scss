@@ -339,6 +339,30 @@ $gray: rgba(255,255,255,.2);
   background: $white;
 }
 
+.tee.east > div:nth-child(2) {
+  background: $white;
+}
+
+.tee.east > div:nth-child(6) {
+  background: none;
+}
+
+.tee.south > div:nth-child(2) {
+  background: $white;
+}
+
+.tee.south > div:nth-child(8) {
+  background: none;
+}
+
+.tee.west > div:nth-child(2) {
+  background: $white;
+}
+
+.tee.west > div:nth-child(4) {
+  background: none;
+}
+
 /* JUNCTION */
 .junction {
   display: grid;

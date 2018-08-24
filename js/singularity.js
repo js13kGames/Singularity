@@ -467,7 +467,7 @@ Renderer.render = (ship, item) => {
 
   Object.keys(ship.layout).forEach((id) => {
     const element = $(`#${id}`);
-    element.removeClass('meteor crew pod');
+    element.removeClass('wrench meteor crew pod');
     element.removeClass('north east south west');
     element.removeClass('hall corner tee junction');
     element.removeClass('playable');
@@ -487,7 +487,8 @@ Renderer.render = (ship, item) => {
   const playable = AI.playable(ship, item);
   playable.forEach(id => $(`#${id}`).addClass('playable'));
 
-  $('#scan').removeClass('meteor crew pod');
+  $('#scan').removeClass('wrench meteor crew pod');
+  $('#scan').removeClass('north east south west');
   $('#scan').removeClass('hall corner tee junction');
   $('#scan').addClass(item);
 };
