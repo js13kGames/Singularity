@@ -277,34 +277,6 @@ Rules.addCrew = (ship, tile) => {
   return Ship.clone(ship);
 };
 
-Rules.needsPod = ship => Rules.collect(ship, 'pod').length < 1;
-
-Rules.canAddPod = (ship, tile) => {
-  if (!Rules.playable(ship, tile)) {
-    return false;
-  }
-
-  if (!Rules.needsPod(ship)) {
-    return false;
-  }
-
-  if (!Rules.isEdge(ship, tile)) {
-    return false;
-  }
-
-  const crew = Rules.collect(ship, 'crew');
-  const close = crew.filter(id => Rules.distance(ship, tile, id) < 3);
-  return close.length < 1;
-};
-
-Rules.addPod = (ship, tile) => {
-  if (Rules.canAddPod(ship, tile)) {
-    return Ship.set(ship, tile, 'pod');
-  }
-
-  return Ship.clone(ship);
-};
-
 Rules.needsCorridor = (ship) => {
   const halls = Rules.collect(ship, 'hall').length;
   const corners = Rules.collect(ship, 'corner').length;
