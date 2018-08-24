@@ -300,6 +300,20 @@ $gray: rgba(255,255,255,.2);
   background: $white;
 }
 
+.hall.east > div:nth-child(2),
+.hall.east > div:nth-child(8),
+.hall.west > div:nth-child(2),
+.hall.west > div:nth-child(8) {
+  background: $white;
+}
+
+.hall.east > div:nth-child(4),
+.hall.east > div:nth-child(6),
+.hall.west > div:nth-child(4),
+.hall.west > div:nth-child(6) {
+  background: none;
+}
+
 /* CORNER */
 .corner {
   display: grid;
