@@ -237,6 +237,22 @@ Rules.crew = (ship, tile) => {
   return copy;
 };
 
+Rules.filled = ship => Object.keys(ship.layout).filter(id => ship.layout[id] === '').length < 1;
+
+Rules.fillable = ship => Object.keys(ship.layout).filter(id => ship.layout[id] === '');
+
+Rules.fill = (ship, tile, item) => {
+  if (Rules.filled(ship)) {
+    return Ship.clone(ship);
+  }
+
+  if (Rules.fillable(ship).indexOf(tile) < 0) {
+    return Ship.clone(ship);
+  }
+
+  return Ship.set(ship, tile, item);
+};
+
 Rules.isCenter = (ship, tile) => {
   const file = tile.slice(0, 1);
   const rank = tile.slice(-1);
@@ -375,7 +391,7 @@ AI.playable = (ship, type) => {
 
   const corridors = ['hall', 'corner', 'tee', 'junction'];
   if (corridors.indexOf(type) > -1) {
-    return valid.filter(id => Rules.canAddCorridor(ship, id, type));
+    return Rules.fillable(ship);
   }
 
   return valid;
@@ -383,7 +399,7 @@ AI.playable = (ship, type) => {
 
 const Engine = {};
 
-Engine.tick = (ship, tile) => {
+Engine.tick = (ship, tile, item) => {
   if (!Rules.repaired(ship)) {
     return Rules.repair(ship, tile);
   }
@@ -396,10 +412,14 @@ Engine.tick = (ship, tile) => {
     return Rules.crew(ship, tile);
   }
 
+  if (!Rules.filled(ship)) {
+    return Rules.fill(ship, tile, item);
+  }
+
   return Ship.clone(ship);
 };
 
-Engine.item = (ship, item) => {
+Engine.item = (ship) => {
   if (!Rules.repaired(ship)) {
     return 'wrench';
   }
@@ -424,12 +444,7 @@ Engine.item = (ship, item) => {
     return 'west';
   }
 
-  const corridors = ['hall', 'corner', 'tee', 'junction'];
-  if (corridors.indexOf(item) < 0) {
-    return D6.pick(corridors);
-  }
-
-  return item;
+  return D6.pick(['hall', 'corner', 'tee', 'junction']);
 };
 
 const Renderer = {};
@@ -479,7 +494,7 @@ Renderer.invalidate = (ship, item) => {
     ship = Ship.create();
     prev = undefined;
     next = undefined;
-    item = Engine.item(ship, item);
+    item = Engine.item(ship);
   }
 
   function onShip(element) {
@@ -488,7 +503,7 @@ Renderer.invalidate = (ship, item) => {
     if (next !== undefined && prev === tile) {
       next = Rules.rotate(next, tile);
     } else {
-      next = Engine.tick(ship, tile);
+      next = Engine.tick(ship, tile, item);
     }
 
     prev = tile;
@@ -500,7 +515,7 @@ Renderer.invalidate = (ship, item) => {
       ship = next;
       prev = undefined;
       next = undefined;
-      item = Engine.item(ship, item);
+      item = Engine.item(ship);
       Renderer.invalidate(ship, item);
     }
   }
