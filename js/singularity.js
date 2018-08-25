@@ -138,7 +138,7 @@ Rules.pod = (ship, tile) => {
     return Ship.clone(ship);
   }
 
-  return Ship.set(ship, tile, 'pod');
+  return Ship.set(ship, tile, 'pod north');
 };
 
 Rules.edges = (ship, direction) => {

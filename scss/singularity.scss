@@ -147,47 +147,143 @@ $gray: rgba(255,255,255,.2);
 }
 
 .pod > div {
-  position: relative;
+  display: grid;
   width: ($tile-size / 3);
   height: ($tile-size / 3);
 }
 
-.pod > div:nth-child(1):after,
-.pod > div:nth-child(2):after,
-.pod > div:nth-child(3):after {
-  position: absolute;
-  bottom: 0;
-  left: ((($tile-size / 3) - ($tile-size / 4)) / 2);
+.pod.north > div:nth-child(1):after,
+.pod.north > div:nth-child(2):after,
+.pod.north > div:nth-child(3):after {
   content: "";
   display: inline-block;
   width: ($tile-size / 4);
   height: ($tile-size / 8);
+  align-self: end;
+  justify-self: center;
   background: $white;
   border-top-left-radius: ($tile-size / 4);
   border-top-right-radius: ($tile-size / 4);
 }
 
-.pod > div:nth-child(4),
-.pod > div:nth-child(5),
-.pod > div:nth-child(6) {
+.pod.south > div:nth-child(7):after,
+.pod.south > div:nth-child(8):after,
+.pod.south > div:nth-child(9):after {
+  content: "";
+  display: inline-block;
+  width: ($tile-size / 4);
+  height: ($tile-size / 8);
+  align-self: start;
+  justify-self: center;
+  background: $white;
+  border-bottom-left-radius: ($tile-size / 4);
+  border-bottom-right-radius: ($tile-size / 4);
+}
+
+.pod.north > div:nth-child(4),
+.pod.north > div:nth-child(5),
+.pod.north > div:nth-child(6),
+.pod.south > div:nth-child(4),
+.pod.south > div:nth-child(5),
+.pod.south > div:nth-child(6) {
   background: $white;
   border-left: 1px solid black;
   border-right: 1px solid black;
 }
 
-.pod > div:nth-child(7):after,
-.pod > div:nth-child(8):after,
-.pod > div:nth-child(9):after{
-  position: absolute;
-  top: 0;
-  left: ($tile-size / 32);
+.pod.north > div:nth-child(7):after,
+.pod.north > div:nth-child(8):after,
+.pod.north > div:nth-child(9):after {
   content: "";
   display: inline-block;
   width: ($tile-size / 8);
   height: 0;
+  align-self: start;
+  justify-self: center;
   border-bottom: ($tile-size / 8) solid $white;
   border-left: ($tile-size / 16) solid transparent;
   border-right: ($tile-size / 16) solid transparent;
+}
+
+.pod.south > div:nth-child(1):after,
+.pod.south > div:nth-child(2):after,
+.pod.south > div:nth-child(3):after {
+  content: "";
+  display: inline-block;
+  width: ($tile-size / 8);
+  height: 0;
+  align-self: end;
+  justify-self: center;
+  border-top: ($tile-size / 8) solid $white;
+  border-left: ($tile-size / 16) solid transparent;
+  border-right: ($tile-size / 16) solid transparent;
+}
+
+.pod.east > div:nth-child(3):after,
+.pod.east > div:nth-child(6):after,
+.pod.east > div:nth-child(9):after {
+  content: "";
+  display: inline-block;
+  width: ($tile-size / 8);
+  height: ($tile-size / 4);
+  align-self: center;
+  justify-self: start;
+  background: $white;
+  border-top-right-radius: ($tile-size / 4);
+  border-bottom-right-radius: ($tile-size / 4);
+}
+
+.pod.west > div:nth-child(1):after,
+.pod.west > div:nth-child(4):after,
+.pod.west > div:nth-child(7):after {
+  content: "";
+  display: inline-block;
+  width: ($tile-size / 8);
+  height: ($tile-size / 4);
+  align-self: center;
+  justify-self: end;
+  background: $white;
+  border-top-left-radius: ($tile-size / 4);
+  border-bottom-left-radius: ($tile-size / 4);
+}
+
+.pod.east > div:nth-child(2),
+.pod.east > div:nth-child(5),
+.pod.east > div:nth-child(8),
+.pod.west > div:nth-child(2),
+.pod.west > div:nth-child(5),
+.pod.west > div:nth-child(8) {
+  background: $white;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.pod.east > div:nth-child(1):after,
+.pod.east > div:nth-child(4):after,
+.pod.east > div:nth-child(7):after {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: ($tile-size / 8);
+  align-self: center;
+  justify-self: end;
+  border-left: ($tile-size / 8) solid $white;
+  border-top: ($tile-size / 16) solid transparent;
+  border-bottom: ($tile-size / 16) solid transparent;
+}
+
+.pod.west > div:nth-child(3):after,
+.pod.west > div:nth-child(6):after,
+.pod.west > div:nth-child(9):after {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: ($tile-size / 8);
+  align-self: center;
+  justify-self: start;
+  border-right: ($tile-size / 8) solid $white;
+  border-top: ($tile-size / 16) solid transparent;
+  border-bottom: ($tile-size / 16) solid transparent;
 }
 
 /* CREW */
