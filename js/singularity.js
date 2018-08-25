@@ -269,34 +269,6 @@ Rules.isCenter = (ship, tile) => {
 
 Rules.isEdge = (ship, tile) => !Rules.isCenter(ship, tile);
 
-Rules.needsCrew = ship => Rules.collect(ship, 'crew').length < 2;
-
-Rules.canAddCrew = (ship, tile) => {
-  if (!Rules.playable(ship, tile)) {
-    return false;
-  }
-
-  if (!Rules.needsCrew(ship)) {
-    return false;
-  }
-
-  if (!Rules.isCenter(ship, tile)) {
-    return false;
-  }
-
-  const crew = Rules.collect(ship, 'crew');
-  const close = crew.filter(id => Rules.distance(ship, tile, id) < 2);
-  return close.length < 1;
-};
-
-Rules.addCrew = (ship, tile) => {
-  if (Rules.canAddCrew(ship, tile)) {
-    return Ship.set(ship, tile, 'crew');
-  }
-
-  return Ship.clone(ship);
-};
-
 Rules.needsCorridor = (ship) => {
   const halls = Rules.collect(ship, 'hall').length;
   const corners = Rules.collect(ship, 'corner').length;
