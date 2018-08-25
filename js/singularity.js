@@ -308,6 +308,131 @@ Rules.rotate = (ship, tile) => {
 
 const AI = {};
 
+AI.exits = (ship, tile) => {
+  let [type, direction] = ship.layout[tile].split(' ');
+  if (direction === undefined) {
+    direction = 'north';
+  }
+  type = `${type} ${direction}`.trim();
+
+  switch (type) {
+    case 'hall north':
+    case 'hall south':
+    case 'pod north':
+    case 'pod south':
+    case 'crew north':
+    case 'crew south':
+      return ['east', 'west'];
+
+    case 'hall east':
+    case 'hall west':
+    case 'pod east':
+    case 'pod west':
+    case 'crew east':
+    case 'crew west':
+      return ['north', 'south'];
+
+    case 'corner north':
+      return ['south', 'west'];
+
+    case 'corner east':
+      return ['north', 'west'];
+
+    case 'corner south':
+      return ['north', 'east'];
+
+    case 'corner west':
+      return ['east', 'south'];
+
+    case 'tee north':
+      return ['east', 'south', 'west'];
+
+    case 'tee east':
+      return ['north', 'south', 'west'];
+
+    case 'tee south':
+      return ['north', 'east', 'west'];
+
+    case 'tee west':
+      return ['north', 'east', 'south'];
+
+    case 'junction north':
+    case 'junction east':
+    case 'junction south':
+    case 'junction west':
+      return ['north', 'east', 'south', 'west'];
+
+    default:
+      return []
+  }
+};
+
+AI.move = (ship, tile, direction) => {
+  const file = tile.slice(0, 1);
+  const rank = tile.slice(-1);
+
+  const ifile = ship.files.indexOf(file);
+  const irank = ship.ranks.indexOf(rank);
+
+  if (ifile < 0 || irank < 0) {
+    return tile;
+  }
+
+  let index;
+
+  switch (direction) {
+    case 'north':
+      index = irank + 1;
+      return index < ship.ranks.length ? file + ship.ranks[index] : tile;
+
+    case 'east':
+      index = ifile + 1;
+      return index < ship.files.length ? ship.files[index] + rank : tile;
+
+    case 'south':
+      index = irank - 1;
+      return index > -1 ? file + ship.ranks[index] : tile;
+
+    case 'west':
+      index = ifile - 1;
+      return index > -1 ? ship.files[index] + rank : tile;
+
+    default:
+      return tile;
+  }
+};
+
+AI.fill = (ship, tile, filled = []) => {
+  if (filled.indexOf(tile) > -1) {
+    return filled;
+  }
+
+  let next = filled.concat(tile);
+  AI.exits(ship, tile).forEach((direction) => {
+    let exit = AI.move(ship, tile, direction);
+    if (exit !== undefined && exit !== tile) {
+      AI.exits(ship, exit).forEach((dir) => {
+        if (direction === 'north' && dir === 'south'
+          || direction === 'south' && dir === 'north'
+          || direction === 'east' && dir === 'west'
+          || direction === 'west' && dir === 'east') {
+          next = AI.fill(ship, exit, next);
+        }
+      });
+    }
+  });
+
+  return next;
+};
+
+AI.rescued = (ship) => {
+  const pod = Rules.collect(ship, 'pod');
+  const crew = Rules.collect(ship, 'crew');
+  const walkable = pod.reduce((acc, id) => AI.fill(ship, id), []);
+  const rescued = crew.filter(id => walkable.indexOf(id) > -1);
+  return rescued;
+};
+
 AI.playable = (ship, type) => {
   if (type === 'wrench') {
     return Rules.repairable(ship);
@@ -414,6 +539,7 @@ Renderer.render = (ship, playable) => {
     crew.forEach(id => $(`#${direction}-${id}`).removeClass('crew north east south west'));
   });
 
+  AI.rescued(ship).forEach(id => $(`#${id}`).addClass('rescued'));
   playable.forEach(id => $(`#${id}`).addClass('playable'));
 };
 
