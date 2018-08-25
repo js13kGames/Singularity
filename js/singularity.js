@@ -206,6 +206,7 @@ Rules.crew = (ship, tile) => {
   if (copy.north === undefined) {
     if (north.indexOf(tile) > -1) {
       copy.north = tile;
+      return Ship.set(copy, tile, 'crew north');
     }
     return copy;
   }
@@ -214,6 +215,7 @@ Rules.crew = (ship, tile) => {
   if (copy.east === undefined) {
     if (east.indexOf(tile) > -1) {
       copy.east = tile;
+      return Ship.set(copy, tile, 'crew east');
     }
     return copy;
   }
@@ -222,6 +224,7 @@ Rules.crew = (ship, tile) => {
   if (copy.south === undefined) {
     if (south.indexOf(tile) > -1) {
       copy.south = tile;
+      return Ship.set(copy, tile, 'crew south');
     }
     return copy;
   }
@@ -230,6 +233,7 @@ Rules.crew = (ship, tile) => {
   if (copy.west === undefined) {
     if (west.indexOf(tile) > -1) {
       copy.west = tile;
+      return Ship.set(copy, tile, 'crew west');
     }
     return copy;
   }
@@ -466,11 +470,6 @@ Renderer.render = (ship, item) => {
     crew.forEach(id => $(`#${direction}-${id}`).removeClass('crew north east south west'));
   });
 
-  $(`#north-${ship.north}`).addClass('crew north');
-  $(`#east-${ship.east}`).addClass('crew east');
-  $(`#south-${ship.south}`).addClass('crew south');
-  $(`#west-${ship.west}`).addClass('crew west');
-
   const playable = AI.playable(ship, item);
   playable.forEach(id => $(`#${id}`).addClass('playable'));
 
@@ -548,50 +547,11 @@ Renderer.invalidate = (ship, item) => {
     $('#ship').html(html);
   }
 
-  function drawCrew() {
-    const $ = Root.jQuery;
-    let html;
-
-
-    html = '';
-    Rules.edges(ship, 'north').forEach((id) => {
-      html += `<div id="north-${id}">`;
-      html += tileHTML(3);
-      html += '</div>';
-    });
-    $('#crew-north').html(html);
-
-    html = '';
-    Rules.edges(ship, 'south').forEach((id) => {
-      html += `<div id="south-${id}">`;
-      html += tileHTML(3);
-      html += '</div>';
-    });
-    $('#crew-south').html(html);
-
-    html = '';
-    Rules.edges(ship, 'west').forEach((id) => {
-      html += `<div id="west-${id}">`;
-      html += tileHTML(3);
-      html += '</div>';
-    });
-    $('#crew-west').html(html);
-
-    html = '';
-    Rules.edges(ship, 'east').forEach((id) => {
-      html += `<div id="east-${id}">`;
-      html += tileHTML(3);
-      html += '</div>';
-    });
-    $('#crew-east').html(html);
-  }
-
   function play() {
     const $ = Root.jQuery;
 
     reset();
     drawShip();
-    drawCrew();
 
     ship.files.forEach((file) => {
       ship.ranks.forEach((rank) => {

@@ -43,14 +43,8 @@ a, a:visited {
   overflow: hidden;
 }
 
-/* SENSORS */
-.sensors {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-
 /* SHIP */
-$tile-size: 4.4rem;
+$tile-size: 4.8rem;
 $gray: rgba(255,255,255,.2);
 
 .ship {
@@ -58,6 +52,7 @@ $gray: rgba(255,255,255,.2);
   grid-template-columns: repeat(6, $tile-size);
   border-top: 1px solid $gray;
   border-left: 1px solid $gray;
+  margin-top: 1.6rem;
 }
 
 .ship > * {
@@ -74,97 +69,12 @@ $gray: rgba(255,255,255,.2);
   background: rgba(245,194,203,.3);
 }
 
-/* CREW */
-#crew-north,
-#crew-south {
-  height: ($tile-size / 2);
-  display: grid;
-  grid-template-columns: repeat(6, $tile-size);
-}
-
-#crew-east,
-#crew-west {
-  display: grid;
-  grid-template-rows: repeat(6, $tile-size);
-}
-
-#crew-north > div,
-#crew-south > div {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-
-#crew-east > div,
-#crew-west > div {
-  display: grid;
-  grid-template-rows: repeat(3, 1fr);
-  overflow: hidden;
-}
-
-.crew > div {
-  position: relative;
-  width: ($tile-size / 3);
-  height: ($tile-size / 3);
-  background: $white;
-}
-
-.crew > div:after {
-  position: absolute;
-  content: "";
-  display: inline-block;
-  background: $white;
-}
-
-.crew.north > div {
-  align-self: end;
-}
-
-.crew.north > div:after {
-  width: ($tile-size / 4);
-  height: ($tile-size / 8);
-  top: -($tile-size / 8);
-  left: ((($tile-size / 3) - ($tile-size / 4)) / 2);
-  border-top-left-radius: ($tile-size / 4);
-  border-top-right-radius: ($tile-size / 4);
-}
-
-.crew.east > div:after {
-  width: ($tile-size / 8);
-  height: ($tile-size / 4);
-  top: ((($tile-size / 3) - ($tile-size / 4)) / 2);
-  left: ($tile-size / 3);
-  border-top-right-radius: ($tile-size / 4);
-  border-bottom-right-radius: ($tile-size / 4);
-}
-
-.crew.south > div:after {
-  width: ($tile-size / 4);
-  height: ($tile-size / 8);
-  top: ($tile-size / 3);
-  left: ((($tile-size / 3) - ($tile-size / 4)) / 2);
-  border-bottom-left-radius: ($tile-size / 4);
-  border-bottom-right-radius: ($tile-size / 4);
-}
-
-.crew.west > div {
-  justify-self: end;
-}
-
-.crew.west > div:after {
-  width: ($tile-size / 8);
-  height: ($tile-size / 4);
-  top: ((($tile-size / 3) - ($tile-size / 4)) / 2);
-  left: -($tile-size / 8);
-  border-top-left-radius: ($tile-size / 4);
-  border-bottom-left-radius: ($tile-size / 4);
-}
-
 /* CONTROLS */
 .controls {
   display: grid;
   justify-items: center;
   grid-template-columns: repeat(5, 1fr);
-  margin-top: 1rem;
+  margin-top: 1.6rem;
 }
 
 .controls > * {
@@ -177,7 +87,6 @@ $gray: rgba(255,255,255,.2);
 }
 
 /* METEOR */
-
 .meteor {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -279,6 +188,109 @@ $gray: rgba(255,255,255,.2);
   border-bottom: ($tile-size / 8) solid $white;
   border-left: ($tile-size / 16) solid transparent;
   border-right: ($tile-size / 16) solid transparent;
+}
+
+/* CREW */
+.crew {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+}
+
+.crew > div {
+  position: relative;
+  width: ($tile-size / 3);
+  height: ($tile-size / 3);
+}
+
+.crew.north > div:nth-child(1):after,
+.crew.north > div:nth-child(2):after,
+.crew.north > div:nth-child(3):after,
+.crew.south > div:nth-child(1):after,
+.crew.south > div:nth-child(2):after,
+.crew.south > div:nth-child(3):after {
+  position: absolute;
+  bottom: 0;
+  left: ((($tile-size / 3) - ($tile-size / 4)) / 2);
+  content: "";
+  display: inline-block;
+  width: ($tile-size / 4);
+  height: ($tile-size / 8);
+  background: $white;
+  border-top-left-radius: ($tile-size / 4);
+  border-top-right-radius: ($tile-size / 4);
+}
+
+.crew.north > div:nth-child(4),
+.crew.north > div:nth-child(5),
+.crew.north > div:nth-child(6),
+.crew.south > div:nth-child(4),
+.crew.south > div:nth-child(5),
+.crew.south > div:nth-child(6) {
+  background: $white;
+}
+
+.crew.north > div:nth-child(7):after,
+.crew.north > div:nth-child(8):after,
+.crew.north > div:nth-child(9):after,
+.crew.south > div:nth-child(7):after,
+.crew.south > div:nth-child(8):after,
+.crew.south > div:nth-child(9):after {
+  position: absolute;
+  top: 0;
+  left: ((($tile-size / 3) - ($tile-size / 4)) / 2);
+  content: "";
+  display: inline-block;
+  width: ($tile-size / 4);
+  height: ($tile-size / 8);
+  background: $white;
+  border-bottom-left-radius: ($tile-size / 4);
+  border-bottom-right-radius: ($tile-size / 4);
+}
+
+.crew.east > div:nth-child(1):after,
+.crew.east > div:nth-child(4):after,
+.crew.east > div:nth-child(7):after,
+.crew.west > div:nth-child(1):after,
+.crew.west > div:nth-child(4):after,
+.crew.west > div:nth-child(7):after {
+  position: absolute;
+  right: 0;
+  top: ((($tile-size / 3) - ($tile-size / 4)) / 2);
+  content: "";
+  display: inline-block;
+  width: ($tile-size / 8);
+  height: ($tile-size / 4);
+  background: $white;
+  border-top-left-radius: ($tile-size / 4);
+  border-bottom-left-radius: ($tile-size / 4);
+}
+
+.crew.east > div:nth-child(2),
+.crew.east > div:nth-child(5),
+.crew.east > div:nth-child(8),
+.crew.west > div:nth-child(2),
+.crew.west > div:nth-child(5),
+.crew.west > div:nth-child(8) {
+  background: $white;
+}
+
+.crew.east > div:nth-child(3):after,
+.crew.east > div:nth-child(6):after,
+.crew.east > div:nth-child(9):after,
+.crew.west > div:nth-child(3):after,
+.crew.west > div:nth-child(6):after,
+.crew.west > div:nth-child(9):after {
+  position: absolute;
+  left: 0;
+  top: ((($tile-size / 3) - ($tile-size / 4)) / 2);
+  content: "";
+  display: inline-block;
+  width: ($tile-size / 8);
+  height: ($tile-size / 4);
+  background: $white;
+  border-top-right-radius: ($tile-size / 4);
+  border-bottom-right-radius: ($tile-size / 4);
 }
 
 /* HALL */
