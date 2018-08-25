@@ -530,7 +530,7 @@ Renderer.render = (ship, playable) => {
     element.removeClass('wrench meteor crew pod');
     element.removeClass('north east south west');
     element.removeClass('hall corner tee junction');
-    element.removeClass('playable');
+    element.removeClass('playable rescued');
     element.addClass(ship.layout[id]);
   });
 
