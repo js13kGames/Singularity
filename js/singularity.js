@@ -314,7 +314,7 @@ Rules.rotate = (ship, tile) => {
   const directions = ['north', 'east', 'south', 'west'];
   const type = ship.layout[tile].split(' ').filter(x => directions.indexOf(x) < 0).join(' ');
 
-  if (type === '' || type === 'meteor') {
+  if (type === '' || type === 'meteor' || type == 'crew') {
     return Ship.clone(ship);
   }
 
