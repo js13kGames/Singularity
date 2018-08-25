@@ -257,47 +257,6 @@ Rules.fill = (ship, tile, item) => {
   return Ship.set(ship, tile, item);
 };
 
-Rules.isCenter = (ship, tile) => {
-  const file = tile.slice(0, 1);
-  const rank = tile.slice(-1);
-
-  const centerFiles = ship.files.slice(1, -1);
-  const centerRanks = ship.ranks.slice(1, -1);
-
-  return centerFiles.indexOf(file) > -1 && centerRanks.indexOf(rank) > -1;
-};
-
-Rules.isEdge = (ship, tile) => !Rules.isCenter(ship, tile);
-
-Rules.needsCorridor = (ship) => {
-  const halls = Rules.collect(ship, 'hall').length;
-  const corners = Rules.collect(ship, 'corner').length;
-  const tees = Rules.collect(ship, 'tee').length;
-  const junctions = Rules.collect(ship, 'junction').length;
-  return halls + corners + tees + junctions < 30;
-};
-
-Rules.canAddCorridor = (ship, tile, corridor) => {
-  if (!Rules.playable(ship, tile)) {
-    return false;
-  }
-
-  const corridors = ['hall', 'corner', 'tee', 'junction'];
-  if (corridors.indexOf(corridor) < 0) {
-    return false;
-  }
-
-  return Rules.needsCorridor(ship);
-};
-
-Rules.addCorridor = (ship, tile, corridor) => {
-  if (Rules.canAddCorridor(ship, tile, corridor)) {
-    return Ship.set(ship, tile, corridor);
-  }
-
-  return Ship.clone(ship);
-};
-
 Rules.clear = (ship, tile) => {
   if (Rules.possible(ship, tile)) {
     return Ship.set(ship, tile, '');
