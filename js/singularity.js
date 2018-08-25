@@ -375,6 +375,8 @@ AI.playable = (ship, type) => {
 
 const Engine = {};
 
+Engine.corridors = [];
+
 Engine.tick = (ship, tile, item) => {
   if (!Rules.repaired(ship)) {
     return Rules.repair(ship, tile);
@@ -420,7 +422,14 @@ Engine.item = (ship) => {
     return 'west';
   }
 
-  return D6.pick(['hall', 'corner', 'tee', 'junction']);
+  let item = D6.pick(Engine.corridors);
+  if (item === undefined) {
+    Engine.corridors = ['hall', 'corner', 'tee', 'junction'];
+    item = D6.pick(Engine.corridors);
+  }
+
+  Engine.corridors = Engine.corridors.filter(id => id !== item);
+  return item;
 };
 
 const Renderer = {};
