@@ -294,7 +294,7 @@ $gray: rgba(255,255,255,.2);
 }
 
 .crew > div {
-  position: relative;
+  display: grid;
   width: ($tile-size / 3);
   height: ($tile-size / 3);
 }
@@ -305,9 +305,8 @@ $gray: rgba(255,255,255,.2);
 .crew.south > div:nth-child(1):after,
 .crew.south > div:nth-child(2):after,
 .crew.south > div:nth-child(3):after {
-  position: absolute;
-  bottom: 0;
-  left: ((($tile-size / 3) - ($tile-size / 4)) / 2);
+  align-self: end;
+  justify-self: center;
   content: "";
   display: inline-block;
   width: ($tile-size / 4);
@@ -332,9 +331,8 @@ $gray: rgba(255,255,255,.2);
 .crew.south > div:nth-child(7):after,
 .crew.south > div:nth-child(8):after,
 .crew.south > div:nth-child(9):after {
-  position: absolute;
-  top: 0;
-  left: ((($tile-size / 3) - ($tile-size / 4)) / 2);
+  align-self: start;
+  justify-self: center;
   content: "";
   display: inline-block;
   width: ($tile-size / 4);
@@ -350,9 +348,8 @@ $gray: rgba(255,255,255,.2);
 .crew.west > div:nth-child(1):after,
 .crew.west > div:nth-child(4):after,
 .crew.west > div:nth-child(7):after {
-  position: absolute;
-  right: 0;
-  top: ((($tile-size / 3) - ($tile-size / 4)) / 2);
+  align-self: center;
+  justify-self: end;
   content: "";
   display: inline-block;
   width: ($tile-size / 8);
@@ -377,9 +374,8 @@ $gray: rgba(255,255,255,.2);
 .crew.west > div:nth-child(3):after,
 .crew.west > div:nth-child(6):after,
 .crew.west > div:nth-child(9):after {
-  position: absolute;
-  left: 0;
-  top: ((($tile-size / 3) - ($tile-size / 4)) / 2);
+  align-self: center;
+  justify-self: start;
   content: "";
   display: inline-block;
   width: ($tile-size / 8);
