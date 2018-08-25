@@ -6,6 +6,8 @@ const Root = (typeof self === 'object' && self.self === self && self)
 
 const D6 = {};
 
+D6.roll = () => Math.floor(Math.random() * 6) + 1;
+
 D6.pick = (list) => {
   const index = Math.floor(Math.random() * list.length);
   return list[index];
@@ -18,6 +20,8 @@ Ship.create = () => {
   const ranks = ['1', '2', '3', '4', '5', '6'];
 
   const layout = {};
+
+  const d6 = D6.roll();
 
   files.forEach((file) => {
     ranks.forEach((rank) => {
@@ -34,6 +38,7 @@ Ship.create = () => {
     files,
     ranks,
     layout,
+    d6,
   };
 };
 
@@ -243,7 +248,12 @@ Rules.crew = (ship, tile) => {
 
 Rules.filled = ship => Object.keys(ship.layout).filter(id => ship.layout[id] === '').length < 1;
 
-Rules.fillable = ship => Object.keys(ship.layout).filter(id => ship.layout[id] === '');
+Rules.fillable = (ship) => {
+  const file = ship.files[ship.d6];
+  const rank = ship.ranks[ship.d6];
+  const empty = Object.keys(ship.layout).filter(id => ship.layout[id] === '');
+  return empty.filter(id => id.slice(0, 1) === file || id.slice(-1) === rank);
+};
 
 Rules.fill = (ship, tile, item) => {
   if (Rules.filled(ship)) {
@@ -452,6 +462,7 @@ Renderer.invalidate = (ship, item) => {
   function onScan() {
     if (next !== undefined) {
       ship = next;
+      ship.d6 = D6.roll();
       prev = undefined;
       next = undefined;
       item = Engine.item(ship);
