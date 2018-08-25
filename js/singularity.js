@@ -404,7 +404,7 @@ Engine.item = (ship) => {
 
 const Renderer = {};
 
-Renderer.render = (ship, item) => {
+Renderer.render = (ship, playable) => {
   const $ = Root.jQuery;
 
   Object.keys(ship.layout).forEach((id) => {
@@ -421,17 +421,11 @@ Renderer.render = (ship, item) => {
     crew.forEach(id => $(`#${direction}-${id}`).removeClass('crew north east south west'));
   });
 
-  const playable = AI.playable(ship, item);
   playable.forEach(id => $(`#${id}`).addClass('playable'));
-
-  $('#scan').removeClass('wrench meteor crew pod');
-  $('#scan').removeClass('north east south west');
-  $('#scan').removeClass('hall corner tee junction');
-  $('#scan').addClass(item);
 };
 
-Renderer.invalidate = (ship, item) => {
-  requestAnimationFrame(() => Renderer.render(ship, item));
+Renderer.invalidate = (ship, playable) => {
+  requestAnimationFrame(() => Renderer.render(ship, playable));
 };
 
 (function game() {
@@ -457,7 +451,7 @@ Renderer.invalidate = (ship, item) => {
     }
 
     prev = tile;
-    Renderer.invalidate(next, item);
+    Renderer.invalidate(next, AI.playable(ship, item));
   }
 
   function onScan() {
@@ -467,7 +461,7 @@ Renderer.invalidate = (ship, item) => {
       prev = undefined;
       next = undefined;
       item = Engine.item(ship);
-      Renderer.invalidate(ship, item);
+      Renderer.invalidate(ship, AI.playable(ship, item));
     }
   }
 
@@ -514,7 +508,7 @@ Renderer.invalidate = (ship, item) => {
     $('#scan').html(tileHTML(9));
     $('#scan').click(onScan);
 
-    Renderer.invalidate(ship, item);
+    Renderer.invalidate(ship, AI.playable(ship, item));
   }
 
   Root.onload = play;
