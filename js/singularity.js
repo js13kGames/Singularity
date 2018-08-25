@@ -127,7 +127,7 @@ Rules.podded = ship => Rules.collect(ship, 'pod').length > 0;
 
 Rules.poddable = (ship) => {
   const meteors = Rules.collect(ship, 'meteor');
-  const orthogonal = [].concat.apply([], meteors.map(id => Rules.orthogonal(ship, id)));
+  const orthogonal = meteors.reduce((acc, id) => acc.concat(Rules.orthogonal(ship, id)), []);
   const empty = orthogonal.filter(id => ship.layout[id] === '');
 
   return empty;
@@ -284,7 +284,7 @@ Rules.rotate = (ship, tile) => {
   const directions = ['north', 'east', 'south', 'west'];
   const type = ship.layout[tile].split(' ').filter(x => directions.indexOf(x) < 0).join(' ');
 
-  if (type === '' || type === 'meteor' || type == 'crew') {
+  if (type === '' || type === 'meteor' || type === 'crew') {
     return Ship.clone(ship);
   }
 
@@ -309,10 +309,12 @@ Rules.rotate = (ship, tile) => {
 const AI = {};
 
 AI.playable = (ship, type) => {
-  const valid = Object.keys(ship.layout).filter(id => ship.layout[id] === '');
-
   if (type === 'wrench') {
     return Rules.repairable(ship);
+  }
+
+  if (type === 'pod') {
+    return Rules.poddable(ship);
   }
 
   if (type === 'north') {
@@ -331,16 +333,7 @@ AI.playable = (ship, type) => {
     return Rules.crewable(ship, 'west');
   }
 
-  if (type === 'pod') {
-    return Rules.poddable(ship);
-  }
-
-  const corridors = ['hall', 'corner', 'tee', 'junction'];
-  if (corridors.indexOf(type) > -1) {
-    return Rules.fillable(ship);
-  }
-
-  return valid;
+  return Rules.fillable(ship);
 };
 
 const Engine = {};
