@@ -249,10 +249,11 @@ Rules.crew = (ship, tile) => {
 Rules.filled = ship => Object.keys(ship.layout).filter(id => ship.layout[id] === '').length < 1;
 
 Rules.fillable = (ship) => {
-  const file = ship.files[ship.d6];
-  const rank = ship.ranks[ship.d6];
+  const file = ship.files[ship.d6 - 1];
+  const rank = ship.ranks[ship.d6 - 1];
   const empty = Object.keys(ship.layout).filter(id => ship.layout[id] === '');
-  return empty.filter(id => id.slice(0, 1) === file || id.slice(-1) === rank);
+  const valid = empty.filter(id => id.slice(0, 1) === file || id.slice(-1) === rank);
+  return valid.length > 0 ? valid : empty;
 };
 
 Rules.fill = (ship, tile, item) => {
