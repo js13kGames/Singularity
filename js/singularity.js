@@ -47,22 +47,7 @@ Ship.set = (ship, tile, value) => {
 
 const Rules = {};
 
-Rules.distance = (ship, a, b) => {
-  const ax = ship.files.indexOf(a.slice(0, 1));
-  const ay = ship.ranks.indexOf(a.slice(-1));
-
-  const bx = ship.files.indexOf(b.slice(0, 1));
-  const by = ship.ranks.indexOf(b.slice(-1));
-
-  const dx = Math.abs(ax - bx);
-  const dy = Math.abs(ay - by);
-
-  return dx > dy ? dx : dy;
-};
-
 Rules.possible = (ship, tile) => ship && tile && Object.keys(ship.layout).indexOf(tile) > -1;
-
-Rules.playable = (ship, tile) => Rules.possible(ship, tile) && ship.layout[tile] === '';
 
 Rules.collect = (ship, type) => Object.keys(ship.layout).filter(id => ship.layout[id].indexOf(type) > -1);
 
