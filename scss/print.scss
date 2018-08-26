@@ -1,4 +1,8 @@
 /* RESET */
+@page {
+  margin: 0;
+}
+
 * {
   color-adjust: exact;
   cursor: default;
@@ -55,6 +59,7 @@ ul {
 
 .page {
   page-break-after: always;
+  margin: 20pt;
 }
 
 /* RULEBOOK */
