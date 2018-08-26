@@ -29,11 +29,6 @@ Ship.create = () => {
     });
   });
 
-  ranks.forEach((rank) => {
-    const file = D6.pick(files);
-    layout[file + rank] = 'meteor';
-  });
-
   return {
     files,
     ranks,
@@ -461,6 +456,20 @@ AI.playable = (ship, type) => {
   return Rules.fillable(ship);
 };
 
+AI.create = () => {
+  const ship = Ship.create();
+
+  ship.ranks.forEach((rank) => {
+    const file = D6.pick(ship.files);
+    ship.layout[file + rank] = 'meteor';
+  });
+
+  const meteor = D6.pick(AI.playable(ship, 'wrench'));
+  ship.layout[meteor] = '';
+
+  return ship;
+};
+
 const Engine = {};
 
 Engine.corridors = [];
@@ -554,7 +563,7 @@ Renderer.invalidate = (ship, playable) => {
   let item;
 
   function reset() {
-    ship = Ship.create();
+    ship = AI.create();
     prev = undefined;
     next = undefined;
     item = Engine.item(ship);
