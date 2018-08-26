@@ -520,29 +520,38 @@ Engine.item = (ship) => {
 
 const Renderer = {};
 
-Renderer.render = (ship, playable) => {
+Renderer.clear = (id) => {
+  const $ = Root.jQuery;
+  const element = $(`#${id}`);
+  element.removeClass('wrench meteor crew pod');
+  element.removeClass('north east south west');
+  element.removeClass('hall corner tee junction');
+  element.removeClass('playable rescued');
+  return element;
+};
+
+Renderer.render = (ship, item, playable) => {
   const $ = Root.jQuery;
 
-  Object.keys(ship.layout).forEach((id) => {
-    const element = $(`#${id}`);
-    element.removeClass('wrench meteor crew pod');
-    element.removeClass('north east south west');
-    element.removeClass('hall corner tee junction');
-    element.removeClass('playable rescued');
-    element.addClass(ship.layout[id]);
-  });
+  Object.keys(ship.layout).forEach(id => Renderer.clear(id).addClass(ship.layout[id]));
 
   ['north', 'east', 'south', 'west'].forEach((direction) => {
     const crew = Rules.edges(ship, direction);
-    crew.forEach(id => $(`#${direction}-${id}`).removeClass('crew north east south west'));
+    crew.forEach(id => Renderer.clear(`${direction}-${id}`));
   });
 
   AI.rescued(ship).forEach(id => $(`#${id}`).addClass('rescued'));
   playable.forEach(id => $(`#${id}`).addClass('playable'));
+
+  let preview = `${item} north`;
+  if (['north', 'south', 'east', 'west'].indexOf(item) > -1) {
+    preview = `crew ${item}`;
+  }
+  Renderer.clear('preview').addClass(preview);
 };
 
-Renderer.invalidate = (ship, playable) => {
-  requestAnimationFrame(() => Renderer.render(ship, playable));
+Renderer.invalidate = (ship, item, playable) => {
+  requestAnimationFrame(() => Renderer.render(ship, item, playable));
 };
 
 (function game() {
@@ -572,7 +581,7 @@ Renderer.invalidate = (ship, playable) => {
     }
 
     prev = tile;
-    Renderer.invalidate(next, AI.playable(ship, item));
+    Renderer.invalidate(next, item, AI.playable(ship, item));
   }
 
   function onScan() {
@@ -582,7 +591,7 @@ Renderer.invalidate = (ship, playable) => {
       prev = undefined;
       next = undefined;
       item = Engine.item(ship);
-      Renderer.invalidate(ship, AI.playable(ship, item));
+      Renderer.invalidate(ship, item, AI.playable(ship, item));
     }
   }
 
@@ -660,10 +669,11 @@ Renderer.invalidate = (ship, playable) => {
       });
     });
 
+    $('#preview').html(tileHTML(9));
     $('#scan').html(tileHTML(9));
     $('#scan').click(onScan);
 
-    Renderer.invalidate(ship, AI.playable(ship, item));
+    Renderer.invalidate(ship, item, AI.playable(ship, item));
   }
 
   Root.onload = play;

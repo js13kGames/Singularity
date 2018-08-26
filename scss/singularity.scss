@@ -75,7 +75,7 @@ $gray: rgba(255,255,255,.15);
 .controls {
   display: grid;
   justify-items: end;
-  grid-template-columns: repeat(1, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   margin-top: 1.6rem;
 }
 
