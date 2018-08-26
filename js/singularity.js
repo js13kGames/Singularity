@@ -453,7 +453,11 @@ AI.playable = (ship, type) => {
     return Rules.crewable(ship, 'west');
   }
 
-  return Rules.fillable(ship);
+  if (AI.rescued(ship).length < 4) {
+    return Rules.fillable(ship);
+  }
+
+  return [];
 };
 
 AI.create = () => {
@@ -570,6 +574,10 @@ Renderer.invalidate = (ship, playable) => {
   }
 
   function onShip(element) {
+    if (AI.playable(ship).length <= 0) {
+      return;
+    }
+
     const tile = element.unwrap().id;
 
     if (next !== undefined && prev === tile) {
