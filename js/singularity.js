@@ -610,6 +610,39 @@ Renderer.invalidate = (ship, playable) => {
     });
 
     $('#ship').html(html);
+
+    html = '';
+
+    ranks.forEach((rank) => {
+      files.forEach((file) => {
+        html += '<div></div>';
+      });
+    });
+
+    $('#board').html(html);
+  }
+
+  function drawTiles() {
+    const $ = Root.jQuery;
+    let html = '';
+
+    const tiles = [
+      'meteor', 'meteor', 'meteor', 'meteor', 'meteor',
+      'pod',
+      'crew', 'crew', 'crew', 'crew',
+      'hall', 'hall', 'hall', 'hall', 'hall', 'hall', 'hall', 'hall',
+      'corner', 'corner', 'corner', 'corner', 'corner', 'corner', 'corner', 'corner',
+      'tee', 'tee', 'tee', 'tee', 'tee', 'tee', 'tee', 'tee',
+      'junction', 'junction', 'junction', 'junction', 'junction', 'junction', 'junction', 'junction'
+    ];
+
+    tiles.forEach((type) => {
+      html += `<div class="${type} north">`;
+      html += tileHTML(9);
+      html += '</div>';
+    });
+
+    $('#tiles').html(html);
   }
 
   function play() {
@@ -617,6 +650,7 @@ Renderer.invalidate = (ship, playable) => {
 
     reset();
     drawShip();
+    drawTiles();
 
     ship.files.forEach((file) => {
       ship.ranks.forEach((rank) => {
