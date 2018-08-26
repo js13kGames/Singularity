@@ -36,7 +36,7 @@ a, a:visited {
 /* WORLD */
 .world {
   display: grid;
-  justify-content: center;
+  justify-items: center;
   /* Usable area on an iPhone 4 is 320x372 pixels */
   width: 32rem;
   margin: 0 auto;
@@ -74,18 +74,34 @@ $gray: rgba(255,255,255,.15);
 /* CONTROLS */
 .controls {
   display: grid;
-  justify-items: end;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: auto ($tile-size + 1.6rem) $tile-size;
+  width: 100%;
   margin-top: 1.6rem;
+  padding: 0 .8rem;
+  justify-items: center;
+  align-items: center;
 }
 
-.controls > * {
+.dialog {
+  color: rgba(255,255,255,.5);
+  font-family: monospace;
+  font-weight: normal;
+  border: 2px solid $gray;
+  width: 100%;
+  font-size: 1.2rem;
+  line-height: 1.4rem;
+  padding: .5rem;
+}
+
+.preview {
+  width: $tile-size;
+  height: $tile-size;
+}
+
+.scan {
   border: 2px solid $gray;
   width: $tile-size;
   height: $tile-size;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 /* METEOR */
@@ -537,7 +553,9 @@ $gray: rgba(255,255,255,.15);
   line-height: 1rem;
   text-align: right;
   color: rgba(255,255,255,.3);
+  width: 100%;
   margin-top: 3.2rem;
+  padding: 0 .8rem;
 }
 
 .colophon > a:hover {

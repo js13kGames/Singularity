@@ -459,6 +459,37 @@ AI.create = () => {
   return ship;
 };
 
+AI.dialog = (ship, item) => {
+  const rescued = AI.rescued(ship).length;
+  const countdown = Object.keys(ship.layout).filter(id => ship.layout[id] === '').length;
+
+  if (item === 'pod') {
+    return 'Meteor impacts detected!<br />Internal sensors offline.<br />Where are the escape pods?';
+  }
+
+  if (item === 'north') {
+    return 'Loading starship map...<br />Main memory offline.<br />Where are the crew quarters?';
+  }
+
+  if (item === 'east') {
+    return 'Loading starship map...<br />Main memory offline.<br />Where is the lab?';
+  }
+
+  if (item === 'south') {
+    return 'Loading starship map...<br />Main memory offline.<br />Where is the observation deck?';
+  }
+
+  if (item === 'west') {
+    return 'Loading starship map...<br />Main memory offline.<br />Where is the cargo hold?';
+  }
+
+  if (item === 'reset') {
+    return `I ended their life support. ${rescued} of my crew managed to survive. I will continue alone.`;
+  }
+
+  return `Life support systems offline.<br />${rescued} crew rescued. Escape pods launching in ${countdown} seconds...`;
+};
+
 const Engine = {};
 
 Engine.corridors = [];
@@ -515,6 +546,11 @@ Engine.item = (ship) => {
   }
 
   Engine.corridors = Engine.corridors.filter(id => id !== item);
+
+  if (AI.playable(ship, item).length < 1) {
+    return 'reset';
+  }
+
   return item;
 };
 
@@ -548,6 +584,8 @@ Renderer.render = (ship, item, playable) => {
     preview = `crew ${item}`;
   }
   Renderer.clear('preview').addClass(preview);
+
+  $('#dialog').html(AI.dialog(ship, item));
 };
 
 Renderer.invalidate = (ship, item, playable) => {
