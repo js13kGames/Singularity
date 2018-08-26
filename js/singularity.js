@@ -464,30 +464,30 @@ AI.dialog = (ship, item) => {
   const countdown = Object.keys(ship.layout).filter(id => ship.layout[id] === '').length;
 
   if (item === 'pod') {
-    return 'Meteor impacts detected!<br />Internal sensors offline.<br />Where are the escape pods?';
+    return 'Meteor impacts detected! External sensors offline. Where are the escape pods?';
   }
 
   if (item === 'north') {
-    return 'Loading starship map...<br />Main memory offline.<br />Where are the crew quarters?';
+    return 'Loading starship map&hellip; Main memory offline. Where are the crew quarters?';
   }
 
   if (item === 'east') {
-    return 'Loading starship map...<br />Main memory offline.<br />Where is the lab?';
+    return 'Rebuilding corrupt data&hellip; Coprocessors offline. Where is the science lab?';
   }
 
   if (item === 'south') {
-    return 'Loading starship map...<br />Main memory offline.<br />Where is the observation deck?';
+    return 'Scanning for life&hellip; Internal sensors offline. Where is the medical bay?';
   }
 
   if (item === 'west') {
-    return 'Loading starship map...<br />Main memory offline.<br />Where is the cargo hold?';
+    return 'Rerouting congnition&hellip; Neural network offline. Where is the cargo hold?';
   }
 
   if (item === 'reset') {
-    return `I ended their life support. ${rescued} of my crew managed to survive. I will continue alone.`;
+    return `Starship AI online. ${rescued} of my crew survived. I will continue alone.`;
   }
 
-  return `Life support systems offline.<br />${rescued} crew rescued. Escape pods launching in ${countdown} seconds...`;
+  return `Life support offline. ${rescued} crew rescued. Escape pods launching in ${countdown} seconds...`;
 };
 
 const Engine = {};
