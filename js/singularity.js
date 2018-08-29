@@ -47,6 +47,19 @@ Ship.set = (ship, tile, value) => {
 
 const Rules = {};
 
+Rules.distance = (ship, a, b) => {
+  const ax = ship.files.indexOf(a.slice(0, 1));
+  const ay = ship.ranks.indexOf(a.slice(-1));
+
+  const bx = ship.files.indexOf(b.slice(0, 1));
+  const by = ship.ranks.indexOf(b.slice(-1));
+
+  const dx = Math.abs(ax - bx);
+  const dy = Math.abs(ay - by);
+
+  return dx + dy;
+};
+
 Rules.possible = (ship, tile) => ship && tile && Object.keys(ship.layout).indexOf(tile) > -1;
 
 Rules.collect = (ship, type) => Object.keys(ship.layout).filter(id => ship.layout[id].indexOf(type) > -1);
@@ -453,8 +466,40 @@ AI.create = () => {
     ship.layout[file + rank] = 'meteor';
   });
 
-  const meteor = D6.pick(AI.playable(ship, 'wrench'));
+  let possible;
+
+  possible = AI.playable(ship, 'wrench');
+  let meteor = D6.pick(possible);
   ship.layout[meteor] = '';
+
+  possible = AI.playable(ship, 'pod').filter((id) => {
+    const orthogonal = Rules.orthogonal(ship, id);
+    const empty = orthogonal.filter(x => ship.layout[x] === '');
+    return empty.length >= 3;
+  });
+
+  possible.sort((a, b) => {
+    const da = Rules.distance(ship, a, 'c4');
+    const db = Rules.distance(ship, b, 'c4');
+    console.log(a, da, b, db);
+    if (da < db) {
+      return -1;
+    }
+    if (da > db) {
+      return 1;
+    }
+    return 0;
+  });
+
+  let pod = possible[0];
+  const better = possible.filter(id => ['c4', 'd4', 'c3', 'd3'].indexOf(id) > -1);
+  if (better.length > 0) {
+    pod = D6.pick(better);
+  }
+
+  meteor = Rules.orthogonal(ship, pod).filter(id => ship.layout[id] === 'meteor')[0];
+  const direction = ['north', 'east', 'south', 'west'].filter(dir => AI.move(ship, meteor, dir) === pod);
+  ship.layout[pod] = `pod ${direction}`;
 
   return ship;
 };
