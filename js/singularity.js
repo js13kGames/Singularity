@@ -458,8 +458,38 @@ AI.playable = (ship, type) => {
   return [];
 };
 
+AI.crew = (ship, pod, direction) => {
+  const copy = Ship.clone(ship);
+
+  let edge1 = 'east';
+  let edge2 = 'west';
+
+  if (direction === 'east' || direction === 'west') {
+    edge1 = 'north';
+    edge2 = 'south';
+  }
+
+  const possible = AI.playable(copy, direction).filter((id) => {
+    const a = AI.move(copy, id, edge1);
+    const b = AI.move(copy, id, edge2);
+    return a !== id && b !== id && copy.layout[a] === '' && copy.layout[b] === '';
+  });
+
+  possible.sort((a, b) => {
+    const da = Rules.distance(copy, a, pod);
+    const db = Rules.distance(copy, b, pod);
+    return da < db ? -1 : (da > db ? 1 : 0);
+  });
+
+  const crew = possible[0];
+  copy[direction] = crew;
+  copy.layout[crew] = `crew ${direction}`;
+
+  return copy;
+};
+
 AI.create = () => {
-  const ship = Ship.create();
+  let ship = Ship.create();
 
   ship.ranks.forEach((rank) => {
     const file = D6.pick(ship.files);
@@ -481,14 +511,7 @@ AI.create = () => {
   possible.sort((a, b) => {
     const da = Rules.distance(ship, a, 'c4');
     const db = Rules.distance(ship, b, 'c4');
-    console.log(a, da, b, db);
-    if (da < db) {
-      return -1;
-    }
-    if (da > db) {
-      return 1;
-    }
-    return 0;
+    return da < db ? -1 : (da > db ? 1 : 0);
   });
 
   let pod = possible[0];
@@ -500,6 +523,12 @@ AI.create = () => {
   meteor = Rules.orthogonal(ship, pod).filter(id => ship.layout[id] === 'meteor')[0];
   const direction = ['north', 'east', 'south', 'west'].filter(dir => AI.move(ship, meteor, dir) === pod);
   ship.layout[pod] = `pod ${direction}`;
+
+
+  ship = AI.crew(ship, pod, 'north');
+  ship = AI.crew(ship, pod, 'east');
+  ship = AI.crew(ship, pod, 'south');
+  ship = AI.crew(ship, pod, 'west');
 
   return ship;
 };
