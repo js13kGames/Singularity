@@ -10,7 +10,7 @@ $white: rgba(255,255,255,.9);
 }
 
 html {
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: Verdana, Geneva, sans-serif;
   font-weight: normal;
   font-size: 62.5%;
 }
@@ -99,9 +99,12 @@ $gray: rgba(255,255,255,.15);
 }
 
 .scan {
+  display: grid;
   border: 2px solid $gray;
   width: $tile-size;
   height: $tile-size;
+  justify-items: center;
+  align-items: center;
 }
 
 /* METEOR */
@@ -548,9 +551,8 @@ $gray: rgba(255,255,255,.15);
 
 /* COLOPHON */
 .colophon {
-  font-family: 'Times New Roman', 'Times', serif;
-  font-size: 1rem;
-  line-height: 1rem;
+  font-size: .9rem;
+  line-height: .9rem;
   text-align: right;
   color: rgba(255,255,255,.3);
   width: 100%;

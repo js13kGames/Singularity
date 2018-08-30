@@ -660,6 +660,7 @@ Renderer.render = (ship, item, playable) => {
   Renderer.clear('preview').addClass(preview);
 
   $('#dialog').html(AI.dialog(ship, item));
+  $('#scan').html(ship.d6);
 };
 
 Renderer.invalidate = (ship, item, playable) => {
@@ -699,7 +700,7 @@ Renderer.invalidate = (ship, item, playable) => {
   function onScan() {
     if (next !== undefined) {
       ship = next;
-      ship.d6 = D6.roll();
+      ship.d6 = D6.pick([1, 2, 3, 4, 5, 6].filter(n => n !== ship.d6));
       prev = undefined;
       next = undefined;
       item = Engine.item(ship);
