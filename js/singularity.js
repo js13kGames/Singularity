@@ -708,6 +708,16 @@ Renderer.invalidate = (ship, item, playable) => {
     }
   }
 
+  function onPrint() {
+    Root.print();
+  }
+
+  function onPlay() {
+    const $ = Root.jQuery;
+    $('#world').removeClass('hidden');
+    $('#intro').addClass('hidden');
+  }
+
   function tileHTML(count) {
     let html = '';
 
@@ -785,6 +795,9 @@ Renderer.invalidate = (ship, item, playable) => {
     $('#preview').html(tileHTML(9));
     $('#scan').html(tileHTML(9));
     $('#scan').click(onScan);
+
+    $('#print').click(undefined, onPrint);
+    $('#play').click(undefined, onPlay);
 
     Renderer.invalidate(ship, item, AI.playable(ship, item));
   }
