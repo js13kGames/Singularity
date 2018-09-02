@@ -640,8 +640,18 @@ Renderer.clear = (id) => {
   return element;
 };
 
-Renderer.render = (ship, item, playable) => {
+Renderer.render = (page, ship, item, playable) => {
   const $ = Root.jQuery;
+
+  if (page === 'intro') {
+    $('#game').addClass('invisible');
+    $('#intro').removeClass('hidden');
+  }
+
+  if (page === 'game') {
+    $('#game').removeClass('invisible');
+    $('#intro').addClass('hidden');
+  }
 
   Object.keys(ship.layout).forEach(id => Renderer.clear(id).addClass(ship.layout[id]));
 
@@ -663,17 +673,19 @@ Renderer.render = (ship, item, playable) => {
   $('#scan').html(ship.d6);
 };
 
-Renderer.invalidate = (ship, item, playable) => {
-  requestAnimationFrame(() => Renderer.render(ship, item, playable));
+Renderer.invalidate = (page, ship, item, playable) => {
+  requestAnimationFrame(() => Renderer.render(page, ship, item, playable));
 };
 
 (function game() {
+  let page;
   let ship;
   let prev;
   let next;
   let item;
 
   function reset() {
+    page = 'intro';
     ship = AI.create();
     prev = undefined;
     next = undefined;
@@ -694,7 +706,7 @@ Renderer.invalidate = (ship, item, playable) => {
     }
 
     prev = tile;
-    Renderer.invalidate(next, item, AI.playable(ship, item));
+    Renderer.invalidate(page, next, item, AI.playable(ship, item));
   }
 
   function onScan() {
@@ -704,7 +716,7 @@ Renderer.invalidate = (ship, item, playable) => {
       prev = undefined;
       next = undefined;
       item = Engine.item(ship);
-      Renderer.invalidate(ship, item, AI.playable(ship, item));
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
     }
   }
 
@@ -713,9 +725,8 @@ Renderer.invalidate = (ship, item, playable) => {
   }
 
   function onPlay() {
-    const $ = Root.jQuery;
-    $('#game').removeClass('invisible');
-    $('#intro').addClass('hidden');
+    page = 'game';
+    Renderer.invalidate(page, ship, item, AI.playable(ship, item));
   }
 
   function tileHTML(count) {
@@ -799,7 +810,7 @@ Renderer.invalidate = (ship, item, playable) => {
     $('#print').click(undefined, onPrint);
     $('#play').click(undefined, onPlay);
 
-    Renderer.invalidate(ship, item, AI.playable(ship, item));
+    Renderer.invalidate(page, ship, item, AI.playable(ship, item));
   }
 
   Root.onload = play;
