@@ -646,11 +646,19 @@ Renderer.render = (page, ship, item, playable) => {
   if (page === 'intro') {
     $('#game').addClass('invisible');
     $('#intro').removeClass('hidden');
+    $('#help').addClass('hidden');
+  }
+
+  if (page === 'help') {
+    $('#game').addClass('invisible');
+    $('#intro').addClass('hidden');
+    $('#help').removeClass('hidden');
   }
 
   if (page === 'game') {
     $('#game').removeClass('invisible');
     $('#intro').addClass('hidden');
+    $('#help').addClass('hidden');
   }
 
   Object.keys(ship.layout).forEach(id => Renderer.clear(id).addClass(ship.layout[id]));
@@ -693,7 +701,7 @@ Renderer.invalidate = (page, ship, item, playable) => {
   }
 
   function onShip(element) {
-    if (AI.playable(ship).length <= 0) {
+    if (page !== 'game' || AI.playable(ship).length <= 0) {
       return;
     }
 
@@ -725,6 +733,16 @@ Renderer.invalidate = (page, ship, item, playable) => {
   }
 
   function onPlay() {
+    page = 'help';
+    Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+  }
+
+  function onHelp() {
+    page = 'help';
+    Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+  }
+
+  function onResume() {
     page = 'game';
     Renderer.invalidate(page, ship, item, AI.playable(ship, item));
   }
@@ -790,12 +808,36 @@ Renderer.invalidate = (page, ship, item, playable) => {
     $('#tiles').html(html);
   }
 
+  function drawHelp() {
+    const $ = Root.jQuery;
+    let html;
+
+    html = '';
+    html += '<div></div>';
+    html += `<div class="pod east">${tileHTML(9)}</div>`;
+    html += `<div class="crew north">${tileHTML(9)}</div>`;
+    html += `<div class="playable corner east">${tileHTML(9)}</div>`;
+    $('#example1').html(html);
+
+    html = '';
+    html += '<div></div>';
+    html += `<div class="pod east">${tileHTML(9)}</div>`;
+    html += `<div class="crew north">${tileHTML(9)}</div>`;
+    html += `<div class="playable corner west">${tileHTML(9)}</div>`;
+    $('#example2').html(html);
+
+    html = '';
+    html += '<div class="wrench"></div>';
+    $('#example3').html(html);
+  }
+
   function play() {
     const $ = Root.jQuery;
 
     reset();
     drawShip();
     drawTiles();
+    drawHelp();
 
     ship.files.forEach((file) => {
       ship.ranks.forEach((rank) => {
@@ -809,6 +851,7 @@ Renderer.invalidate = (page, ship, item, playable) => {
 
     $('#print').click(undefined, onPrint);
     $('#play').click(undefined, onPlay);
+    $('#example3').click(undefined, onResume);
 
     Renderer.invalidate(page, ship, item, AI.playable(ship, item));
   }

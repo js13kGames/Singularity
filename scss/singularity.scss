@@ -2,6 +2,7 @@
 $font-size: 1.6rem;
 $white: rgba(255,255,255,.9);
 $gray: rgba(255,255,255,.15);
+$tile-size: 4.8rem;
 
 * {
   cursor: default;
@@ -65,6 +66,9 @@ a, a:visited {
   padding: ($font-size / 2);
   border: 1px solid rgba(255,255,255,.4);
   border-radius: 5px;
+}
+
+.intro > .quote {
   grid-column: 1 / 3;
   margin: ($font-size / 2) ($font-size / 2) 0 ($font-size / 2);
 }
@@ -83,9 +87,49 @@ a, a:visited {
   border-radius: 5px;
 }
 
-/* SHIP */
-$tile-size: 4.8rem;
+/* HELP */
+.help {
+  position: absolute;
+  top: ($font-size / 2);
+  left: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+}
 
+.rule {
+  display: grid;
+  grid-template-columns: 1fr ($tile-size * 2);
+}
+
+.rule + .rule {
+  margin-top: ($font-size * 2);
+}
+
+.rule > .quote {
+  margin-right: $font-size;
+}
+
+.example {
+  display: inline-grid;
+  justify-items: center;
+  align-items: center;
+}
+
+.example.grid {
+  grid-template-columns: repeat(2, $tile-size);
+  border: 1px solid $gray;
+}
+
+.example.grid > * {
+  border: 1px solid $gray;
+  width: $tile-size;
+  height: $tile-size;
+  display: grid;
+  justify-items: center;
+  align-items: center;
+}
+
+/* SHIP */
 .ship {
   display: inline-grid;
   grid-template-columns: repeat(6, $tile-size);
@@ -135,15 +179,6 @@ $tile-size: 4.8rem;
 .preview {
   width: $tile-size;
   height: $tile-size;
-}
-
-.scan {
-  display: grid;
-  border: 2px solid $gray;
-  width: $tile-size;
-  height: $tile-size;
-  justify-items: center;
-  align-items: center;
 }
 
 /* METEOR */
@@ -586,6 +621,15 @@ $tile-size: 4.8rem;
 .junction > div:nth-child(6),
 .junction > div:nth-child(8) {
   background: $white;
+}
+
+/* WRENCH */
+.wrench {
+  border: 2px solid $gray;
+  display: inline-block;
+  width: $tile-size;
+  height: $tile-size;
+  background: url(spanner.svg);
 }
 
 /* COLOPHON */
