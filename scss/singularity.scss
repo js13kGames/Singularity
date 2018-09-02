@@ -34,15 +34,30 @@ a, a:visited {
   text-decoration: none;
 }
 
-/* INTRO */
-.intro {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  justify-items: center;
+/* WORLD */
+.world {
+  position: relative;
   /* Usable area on an iPhone 4 is 320x372 pixels */
   width: 32rem;
   margin: 0 auto;
   overflow: hidden;
+}
+
+/* GAME */
+.game {
+  display: grid;
+  justify-items: center;
+}
+
+/* INTRO */
+.intro {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: center;
+  width: 32rem;
 }
 
 .quote {
@@ -68,21 +83,11 @@ a, a:visited {
   border-radius: 5px;
 }
 
-/* WORLD */
-.world {
-  display: grid;
-  justify-items: center;
-  /* Usable area on an iPhone 4 is 320x372 pixels */
-  width: 32rem;
-  margin: 0 auto;
-  overflow: hidden;
-}
-
 /* SHIP */
 $tile-size: 4.8rem;
 
 .ship {
-  display: grid;
+  display: inline-grid;
   grid-template-columns: repeat(6, $tile-size);
   border: 1px solid $gray;
   margin-top: ($font-size / 2);
@@ -92,8 +97,8 @@ $tile-size: 4.8rem;
   border: 1px solid $gray;
   width: $tile-size;
   height: $tile-size;
-  display: flex;
-  justify-content: center;
+  display: grid;
+  justify-items: center;
   align-items: center;
 }
 
@@ -620,4 +625,8 @@ abbr[title="and"] {
 /* UX */
 .hidden {
   display: none !important;
+}
+
+.invisible {
+  visibility: hidden !important;
 }

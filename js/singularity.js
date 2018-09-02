@@ -714,7 +714,7 @@ Renderer.invalidate = (ship, item, playable) => {
 
   function onPlay() {
     const $ = Root.jQuery;
-    $('#world').removeClass('hidden');
+    $('#game').removeClass('invisible');
     $('#intro').addClass('hidden');
   }
 
