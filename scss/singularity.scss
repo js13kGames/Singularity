@@ -668,3 +668,11 @@ abbr[title="and"] {
 .fade {
   opacity: .1;
 }
+
+.unselectable {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  -webkit-touch-callout: none;
+}
