@@ -160,12 +160,12 @@ a, a:visited {
 }
 
 .playable {
-  background: rgba(100,200,235,.2) !important;
-  border: 1px solid rgba(100,200,235,.4) !important;
+  background: rgba(86,180,233,.2) !important;
+  border: 1px solid rgba(86,180,233,.4) !important;
 }
 
 .rescued {
-  background: green;
+  color: rgba(86,180,233,.9) !important;
 }
 
 /* CONTROLS */
@@ -389,6 +389,7 @@ a, a:visited {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   overflow: hidden;
+  color: $white;
 }
 
 .crew > div {
@@ -409,7 +410,7 @@ a, a:visited {
   display: inline-block;
   width: ($tile-size / 4);
   height: ($tile-size / 8);
-  background: $white;
+  background: currentColor;
   border-top-left-radius: ($tile-size / 4);
   border-top-right-radius: ($tile-size / 4);
 }
@@ -420,7 +421,7 @@ a, a:visited {
 .crew.south > div:nth-child(4),
 .crew.south > div:nth-child(5),
 .crew.south > div:nth-child(6) {
-  background: $white;
+  background: currentColor;
 }
 
 .crew.north > div:nth-child(7):after,
@@ -435,7 +436,7 @@ a, a:visited {
   display: inline-block;
   width: ($tile-size / 4);
   height: ($tile-size / 8);
-  background: $white;
+  background: currentColor;
   border-bottom-left-radius: ($tile-size / 4);
   border-bottom-right-radius: ($tile-size / 4);
 }
@@ -452,7 +453,7 @@ a, a:visited {
   display: inline-block;
   width: ($tile-size / 8);
   height: ($tile-size / 4);
-  background: $white;
+  background: currentColor;
   border-top-left-radius: ($tile-size / 4);
   border-bottom-left-radius: ($tile-size / 4);
 }
@@ -463,7 +464,7 @@ a, a:visited {
 .crew.west > div:nth-child(2),
 .crew.west > div:nth-child(5),
 .crew.west > div:nth-child(8) {
-  background: $white;
+  background: currentColor;
 }
 
 .crew.east > div:nth-child(3):after,
@@ -478,7 +479,7 @@ a, a:visited {
   display: inline-block;
   width: ($tile-size / 8);
   height: ($tile-size / 4);
-  background: $white;
+  background: currentColor;
   border-top-right-radius: ($tile-size / 4);
   border-bottom-right-radius: ($tile-size / 4);
 }
