@@ -723,6 +723,7 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
     }
 
     const tile = element.unwrap().id;
+    const playable = AI.playable(ship, item);
 
     if (next !== undefined && prev === tile) {
       next = Rules.rotate(next, tile);
@@ -731,7 +732,11 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
     }
 
     prev = tile;
-    Renderer.invalidate(page, next, item, AI.playable(ship, item), 'ship');
+    Renderer.invalidate(page, next, item, playable, 'ship');
+
+    if (!playable.includes(tile)) {
+      next = undefined;
+    }
   }
 
   function onPrev() {
