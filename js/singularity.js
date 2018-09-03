@@ -629,12 +629,13 @@ Renderer.clear = (id) => {
   return element;
 };
 
-Renderer.render = (page, ship, item, playable) => {
+Renderer.render = (page, ship, item, playable, from) => {
   const $ = Root.jQuery;
 
   if (page === 'intro') {
     $('#story').removeClass('hidden');
     $('#help').addClass('hidden');
+    $('#timer').addClass('fade');
     $('#ship').addClass('fade');
     $('#prev').removeClass('invisible').html('Print');
     $('#preview').addClass('fade');
@@ -644,6 +645,7 @@ Renderer.render = (page, ship, item, playable) => {
   if (page === 'help') {
     $('#story').addClass('hidden');
     $('#help').removeClass('hidden');
+    $('#timer').addClass('fade');
     $('#ship').addClass('fade');
     $('#prev').addClass('invisible');
     $('#preview').addClass('fade');
@@ -653,6 +655,7 @@ Renderer.render = (page, ship, item, playable) => {
   if (page === 'game') {
     $('#story').addClass('hidden');
     $('#help').addClass('hidden');
+    $('#timer').removeClass('fade');
     $('#ship').removeClass('fade');
     $('#prev').removeClass('invisible').html('Help');
     $('#preview').removeClass('fade');
@@ -662,6 +665,7 @@ Renderer.render = (page, ship, item, playable) => {
   if (page === 'over') {
     $('#story').removeClass('hidden');
     $('#help').addClass('hidden');
+    $('#timer').addClass('fade');
     $('#ship').addClass('fade');
     $('#prev').removeClass('invisible').html('Print');
     $('#preview').addClass('fade');
@@ -686,10 +690,16 @@ Renderer.render = (page, ship, item, playable) => {
 
   const [dialog, cite] = AI.dialog(page, ship, item);
   $('#dialog').html(`${dialog}<div class="cite">${cite}</div>`);
+
+  if (page === 'game' && from === 'next') {
+    const empty = Object.keys(ship.layout).filter(id => ship.layout[id] === '');
+    const time = empty.length < 10 ? '0' + empty.length : '' + empty.length;
+    $('#timer').html(time);
+  }
 };
 
-Renderer.invalidate = (page, ship, item, playable) => {
-  requestAnimationFrame(() => Renderer.render(page, ship, item, playable));
+Renderer.invalidate = (page, ship, item, playable, from) => {
+  requestAnimationFrame(() => Renderer.render(page, ship, item, playable, from));
 };
 
 (function game() {
@@ -721,7 +731,7 @@ Renderer.invalidate = (page, ship, item, playable) => {
     }
 
     prev = tile;
-    Renderer.invalidate(page, next, item, AI.playable(ship, item));
+    Renderer.invalidate(page, next, item, AI.playable(ship, item), 'ship');
   }
 
   function onPrev() {
@@ -736,7 +746,7 @@ Renderer.invalidate = (page, ship, item, playable) => {
 
     if (page === 'game') {
       page = 'help';
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item), 'prev');
       return;
     }
 
@@ -749,13 +759,13 @@ Renderer.invalidate = (page, ship, item, playable) => {
   function onNext() {
     if (page === 'intro') {
       page = 'help';
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item), 'next');
       return;
     }
 
     if (page === 'help') {
       page = 'game';
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item), 'next');
       return;
     }
 
@@ -765,19 +775,19 @@ Renderer.invalidate = (page, ship, item, playable) => {
       prev = undefined;
       next = undefined;
       item = Engine.item(ship);
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item), 'next');
       return;
     }
 
     if (page === 'game' && item === 'reset') {
       page = 'over';
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item), 'next');
       return;
     }
 
     if (page === 'over') {
       reset();
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item), 'next');
       return;
     }
   }
@@ -880,7 +890,7 @@ Renderer.invalidate = (page, ship, item, playable) => {
     $('#preview').html(tileHTML(9));
     $('#next').click(onNext);
 
-    Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+    Renderer.invalidate(page, ship, item, AI.playable(ship, item), 'next');
   }
 
   Root.onload = play;
