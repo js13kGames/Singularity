@@ -131,14 +131,14 @@ a, a:visited {
 .timer {
   position: absolute;
   top: .8rem;
-  font-family: monospace;
+  font-family: "Courier New", "Courier", "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
   display: grid;
   justify-items: center;
   align-items: center;
   width: 100%;
   height: ($tile-size * 6);
-  font-size: 30rem;
-  line-height: 30rem;
+  font-size: 24rem;
+  line-height: 24rem;
   color: rgba(255,255,255,.1);
 }
 
@@ -157,6 +157,7 @@ a, a:visited {
   display: grid;
   justify-items: center;
   align-items: center;
+  box-sizing: content-box;
 }
 
 .playable {
@@ -182,6 +183,7 @@ a, a:visited {
   width: $tile-size;
   height: $tile-size;
   border: 2px solid $gray;
+  box-sizing: border-box;
 }
 
 /* METEOR */
