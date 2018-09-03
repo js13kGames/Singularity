@@ -491,9 +491,17 @@ AI.crew = (ship, pod, direction) => {
 AI.create = () => {
   let ship = Ship.create();
 
+  const center = ship.files.slice(1, -1);
+  let files = ship.files.slice();
   ship.ranks.forEach((rank) => {
-    const file = D6.pick(ship.files);
+    const file = D6.pick(files);
     ship.layout[file + rank] = 'meteor';
+    if (center.indexOf(file) < 0) {
+      const index = files.indexOf(file);
+      if (index > -1) {
+        files.splice(index, 1);
+      }
+    }
   });
 
   let possible;
