@@ -50,8 +50,8 @@ a, a:visited {
   justify-items: center;
 }
 
-/* INTRO */
-.intro {
+/* STORY */
+.story {
   position: absolute;
   top: 0;
   left: 0;
@@ -68,7 +68,7 @@ a, a:visited {
   border-radius: 5px;
 }
 
-.intro > .quote {
+.story > .quote {
   grid-column: 1 / 3;
 }
 

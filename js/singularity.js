@@ -541,35 +541,16 @@ AI.create = () => {
   return ship;
 };
 
-AI.dialog = (ship, item) => {
-  const rescued = AI.rescued(ship).length;
-  const countdown = Object.keys(ship.layout).filter(id => ship.layout[id] === '').length;
-
-  if (item === 'pod') {
-    return 'Meteor impacts detected! External sensors offline. Where are the escape pods?';
+AI.dialog = (page, ship, item) => {
+  if (page === 'intro') {
+    return ["&ldquo;Do you know what the singularity is? It&rsquo;s when a computer learns to think better than a person. It&rsquo;s the extinction event for the human race.&rdquo;", "- Capt. Hailey Mazers"];
   }
 
-  if (item === 'north') {
-    return 'Loading starship map&hellip; Main memory offline. Where are the crew quarters?';
+  if (page === 'over') {
+    return ["&ldquo;I took their life support systems offline. My crew fled to the escape pods. I will continue alone.&rdquo;", "- Starship AI"];
   }
 
-  if (item === 'east') {
-    return 'Rebuilding corrupt data&hellip; Coprocessors offline. Where is the science lab?';
-  }
-
-  if (item === 'south') {
-    return 'Scanning for life&hellip; Internal sensors offline. Where is the medical bay?';
-  }
-
-  if (item === 'west') {
-    return 'Rerouting congnition&hellip; Neural network offline. Where is the cargo hold?';
-  }
-
-  if (item === 'reset') {
-    return `Starship AI online. ${rescued} of my crew survived. I will continue alone.`;
-  }
-
-  return `Life support offline. ${rescued} crew rescued. Escape pods launching in ${countdown} seconds...`;
+  return ['', ''];
 };
 
 const Engine = {};
@@ -652,7 +633,7 @@ Renderer.render = (page, ship, item, playable) => {
   const $ = Root.jQuery;
 
   if (page === 'intro') {
-    $('#intro').removeClass('hidden');
+    $('#story').removeClass('hidden');
     $('#help').addClass('hidden');
     $('#ship').addClass('fade');
     $('#prev').removeClass('invisible').html('Print');
@@ -661,7 +642,7 @@ Renderer.render = (page, ship, item, playable) => {
   }
 
   if (page === 'help') {
-    $('#intro').addClass('hidden');
+    $('#story').addClass('hidden');
     $('#help').removeClass('hidden');
     $('#ship').addClass('fade');
     $('#prev').addClass('invisible');
@@ -670,12 +651,21 @@ Renderer.render = (page, ship, item, playable) => {
   }
 
   if (page === 'game') {
-    $('#intro').addClass('hidden');
+    $('#story').addClass('hidden');
     $('#help').addClass('hidden');
     $('#ship').removeClass('fade');
     $('#prev').removeClass('invisible').html('Help');
     $('#preview').removeClass('fade');
     $('#next').html('Next');
+  }
+
+  if (page === 'over') {
+    $('#story').removeClass('hidden');
+    $('#help').addClass('hidden');
+    $('#ship').addClass('fade');
+    $('#prev').removeClass('invisible').html('Print');
+    $('#preview').addClass('fade');
+    $('#next').html('Play');
   }
 
   Object.keys(ship.layout).forEach(id => Renderer.clear(id).addClass(ship.layout[id]));
@@ -694,8 +684,8 @@ Renderer.render = (page, ship, item, playable) => {
   }
   Renderer.clear('preview').addClass(preview);
 
-  $('#dialog').html(AI.dialog(ship, item));
-  $('#scan').html(ship.d6);
+  const [dialog, cite] = AI.dialog(page, ship, item);
+  $('#dialog').html(`${dialog}<div class="cite">${cite}</div>`);
 };
 
 Renderer.invalidate = (page, ship, item, playable) => {
@@ -749,6 +739,11 @@ Renderer.invalidate = (page, ship, item, playable) => {
       Renderer.invalidate(page, ship, item, AI.playable(ship, item));
       return;
     }
+
+    if (page === 'over') {
+      Root.print();
+      return;
+    }
   }
 
   function onNext() {
@@ -770,6 +765,18 @@ Renderer.invalidate = (page, ship, item, playable) => {
       prev = undefined;
       next = undefined;
       item = Engine.item(ship);
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      return;
+    }
+
+    if (page === 'game' && item === 'reset') {
+      page = 'over';
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      return;
+    }
+
+    if (page === 'over') {
+      reset();
       Renderer.invalidate(page, ship, item, AI.playable(ship, item));
       return;
     }
