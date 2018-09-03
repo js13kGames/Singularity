@@ -644,21 +644,30 @@ Renderer.render = (page, ship, item, playable) => {
   const $ = Root.jQuery;
 
   if (page === 'intro') {
-    $('#game').addClass('invisible');
     $('#intro').removeClass('hidden');
     $('#help').addClass('hidden');
+    $('#ship').addClass('fade');
+    $('#prev').removeClass('invisible').html('Print');
+    $('#preview').addClass('fade');
+    $('#next').html('Play');
   }
 
   if (page === 'help') {
-    $('#game').addClass('invisible');
     $('#intro').addClass('hidden');
     $('#help').removeClass('hidden');
+    $('#ship').addClass('fade');
+    $('#prev').addClass('invisible');
+    $('#preview').addClass('fade');
+    $('#next').html('Play');
   }
 
   if (page === 'game') {
-    $('#game').removeClass('invisible');
     $('#intro').addClass('hidden');
     $('#help').addClass('hidden');
+    $('#ship').removeClass('fade');
+    $('#prev').removeClass('invisible').html('Help');
+    $('#preview').removeClass('fade');
+    $('#next').html('Next');
   }
 
   Object.keys(ship.layout).forEach(id => Renderer.clear(id).addClass(ship.layout[id]));
@@ -717,34 +726,45 @@ Renderer.invalidate = (page, ship, item, playable) => {
     Renderer.invalidate(page, next, item, AI.playable(ship, item));
   }
 
-  function onScan() {
-    if (next !== undefined) {
+  function onPrev() {
+    if (page === 'intro') {
+      Root.print();
+      return;
+    }
+
+    if (page === 'help') {
+      return;
+    }
+
+    if (page === 'game') {
+      page = 'help';
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      return;
+    }
+  }
+
+  function onNext() {
+    if (page === 'intro') {
+      page = 'help';
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      return;
+    }
+
+    if (page === 'help') {
+      page = 'game';
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      return;
+    }
+
+    if (page === 'game' && next !== undefined) {
       ship = next;
       ship.d6 = D6.pick([1, 2, 3, 4, 5, 6].filter(n => n !== ship.d6));
       prev = undefined;
       next = undefined;
       item = Engine.item(ship);
       Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      return;
     }
-  }
-
-  function onPrint() {
-    Root.print();
-  }
-
-  function onPlay() {
-    page = 'help';
-    Renderer.invalidate(page, ship, item, AI.playable(ship, item));
-  }
-
-  function onHelp() {
-    page = 'help';
-    Renderer.invalidate(page, ship, item, AI.playable(ship, item));
-  }
-
-  function onResume() {
-    page = 'game';
-    Renderer.invalidate(page, ship, item, AI.playable(ship, item));
   }
 
   function tileHTML(count) {
@@ -825,10 +845,6 @@ Renderer.invalidate = (page, ship, item, playable) => {
     html += `<div class="crew north">${tileHTML(9)}</div>`;
     html += `<div class="playable corner west">${tileHTML(9)}</div>`;
     $('#example2').html(html);
-
-    html = '';
-    html += '<div class="wrench"></div>';
-    $('#example3').html(html);
   }
 
   function play() {
@@ -845,13 +861,9 @@ Renderer.invalidate = (page, ship, item, playable) => {
       });
     });
 
+    $('#prev').click(onPrev);
     $('#preview').html(tileHTML(9));
-    $('#scan').html(tileHTML(9));
-    $('#scan').click(onScan);
-
-    $('#print').click(undefined, onPrint);
-    $('#play').click(undefined, onPlay);
-    $('#example3').click(undefined, onResume);
+    $('#next').click(onNext);
 
     Renderer.invalidate(page, ship, item, AI.playable(ship, item));
   }
@@ -881,6 +893,8 @@ Renderer.invalidate = (page, ship, item, playable) => {
       const klasses = klass.split(' ').filter(k => k);
       klasses.forEach(k => this.element.classList.add(k));
     }
+
+    return this;
   };
 
   Fn.prototype.removeClass = function removeClass(klass) {
@@ -888,35 +902,41 @@ Renderer.invalidate = (page, ship, item, playable) => {
       const klasses = klass.split(' ').filter(k => k);
       klasses.forEach(k => this.element.classList.remove(k));
     }
+
+    return this;
   };
 
   Fn.prototype.toggleClass = function toggleClass(klass) {
     if (this.element && this.element.classList) {
       this.element.classList.toggle(klass);
     }
+
+    return this;
   };
 
   Fn.prototype.html = function html(value) {
     if (this.element) {
       this.element.innerHTML = value;
     }
+
+    return this;
   };
 
   Fn.prototype.click = function click(start, end) {
-    const self = this;
+    const that = this;
 
     if (this.element) {
       if ('ontouchstart' in document.documentElement === false) {
         this.element.onmousedown = function onmousedown(mouseDownEvent) {
           if (start) {
-            start(self, mouseDownEvent);
+            start(that, mouseDownEvent);
           }
           document.onmousemove = function onmousemove(e) {
             e.preventDefault();
           };
           document.onmouseup = function onmouseup(e) {
             if (end) {
-              end(self, e);
+              end(that, e);
             }
             document.onmousemove = undefined;
             document.onmouseup = undefined;
@@ -925,14 +945,14 @@ Renderer.invalidate = (page, ship, item, playable) => {
       } else {
         this.element.ontouchstart = function ontouchstart(touchStartEvent) {
           if (start) {
-            start(self, touchStartEvent);
+            start(that, touchStartEvent);
           }
           document.ontouchmove = function ontouchmove(e) {
             e.preventDefault();
           };
           document.ontouchend = function ontouchend(e) {
             if (end) {
-              end(self, e);
+              end(that, e);
             }
             document.ontouchmove = undefined;
             document.ontouchend = undefined;
@@ -940,6 +960,8 @@ Renderer.invalidate = (page, ship, item, playable) => {
         };
       }
     }
+
+    return that;
   };
 
   Fn.prototype.unwrap = function unwrap() {
