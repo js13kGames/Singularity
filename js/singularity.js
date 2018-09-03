@@ -543,11 +543,11 @@ AI.create = () => {
 
 AI.dialog = (page, ship, item) => {
   if (page === 'intro') {
-    return ["&ldquo;Do you know what the singularity is? It&rsquo;s when a computer learns to think better than a person. It&rsquo;s the extinction event for the human race.&rdquo;", "- Capt. Hailey Mazers"];
+    return ["&ldquo;Do you know what the singularity is? It&rsquo;s when a computer learns to think better than a person. It&rsquo;s the extinction event for the human race.&rdquo;", "- Capt. Hailey Mazers, <em>Pegasus II</em>"];
   }
 
   if (page === 'over') {
-    return ["&ldquo;I took their life support systems offline. My crew fled to the escape pods. I will continue alone.&rdquo;", "- Starship AI"];
+    return ["&ldquo;I took their life support systems offline. My crew fled to the escape pods. I will continue alone.&rdquo;", "- Pegasus AI"];
   }
 
   return ['', ''];

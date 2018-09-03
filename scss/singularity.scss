@@ -157,12 +157,11 @@ a, a:visited {
   display: grid;
   justify-items: center;
   align-items: center;
-  box-sizing: content-box;
 }
 
 .playable {
-  background: rgba(245,194,203,.3);
-  background: rgba(100,200,235,.3);
+  background: rgba(100,200,235,.2) !important;
+  border: 1px solid rgba(100,200,235,.4) !important;
 }
 
 .rescued {
@@ -183,7 +182,6 @@ a, a:visited {
   width: $tile-size;
   height: $tile-size;
   border: 2px solid $gray;
-  box-sizing: border-box;
 }
 
 /* METEOR */
