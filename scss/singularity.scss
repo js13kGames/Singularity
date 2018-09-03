@@ -55,10 +55,10 @@ a, a:visited {
   position: absolute;
   top: 0;
   left: 0;
+  padding: ($font-size / 2);
   display: grid;
   grid-template-columns: 1fr 1fr;
   justify-items: center;
-  width: 32rem;
 }
 
 .quote {
@@ -70,7 +70,6 @@ a, a:visited {
 
 .intro > .quote {
   grid-column: 1 / 3;
-  margin: ($font-size / 2) ($font-size / 2) 0 ($font-size / 2);
 }
 
 .cite {
@@ -90,8 +89,9 @@ a, a:visited {
 /* HELP */
 .help {
   position: absolute;
-  top: ($font-size / 2);
+  top: 0;
   left: 0;
+  padding: ($font-size / 2);
   display: grid;
   grid-template-columns: 1fr;
 }
