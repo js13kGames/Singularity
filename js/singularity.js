@@ -917,6 +917,8 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
           break;
         case 6:
           count.html(3);
+          tile.addClass('corner east');
+          crew.addClass('rescued');
           next.addClass('picked');
           break;
         default:
