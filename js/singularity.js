@@ -894,31 +894,35 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
         tick = 1;
       }
 
-      count.html(tick);
-
       switch (tick) {
         case 1:
+          count.html(1);
           break;
         case 2:
+          count.html(1);
           tile.addClass('picked');
           break;
         case 3:
+          count.html(2);
           tile.addClass('corner north');
           break;
         case 4:
+          count.html(2);
           tile.addClass('picked corner north');
           break;
         case 5:
+          count.html(3);
           tile.addClass('corner east');
           crew.addClass('rescued');
           break;
         case 6:
+          count.html(3);
           next.addClass('picked');
           break;
         default:
           break;
       }
-    }, 1000);
+    }, 600);
   }
 
   function play() {
