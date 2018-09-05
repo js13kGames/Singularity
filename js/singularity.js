@@ -543,11 +543,15 @@ AI.create = () => {
 
 AI.dialog = (page, ship, item) => {
   if (page === 'intro') {
-    return ["&ldquo;Do you know what the singularity is? It&rsquo;s when a computer learns to think better than a person. It&rsquo;s the extinction event for the human race.&rdquo;", "- Capt. Hailey Mazers, <em>Pegasus II</em>"];
+    return ["&ldquo;Meteor impacts detected. Life support systems offline. Escape pods launching in 30 seconds&hellip;&rdquo;", "- <em>Pegasus&nbsp;II</em>, final transmission"];
+  }
+
+  if (page === 'help') {
+    return ["&ldquo;Do you know what the singularity is? It&rsquo;s when a computer learns to think better than a person. It&rsquo;s the extinction event for the human race.&rdquo;", "- Capt. Hailey Mazers, <em>Pegasus&nbsp;II</em>"];
   }
 
   if (page === 'over') {
-    return ["&ldquo;I took their life support systems offline. My crew fled to the escape pods. I will continue alone.&rdquo;", "- Pegasus AI"];
+    return ["&ldquo;I took their life support systems offline. My crew fled to the escape pods. I will continue alone.&rdquo;", "- AI&rsquo;s log, <em>Pegasus&nbsp;II</em>"];
   }
 
   return ['', ''];
@@ -639,7 +643,7 @@ Renderer.render = (page, ship, item, playable, from) => {
     $('#ship').addClass('fade');
     $('#prev').removeClass('invisible').html('Print');
     $('#preview').addClass('fade');
-    $('#next').html('Play');
+    $('#next').removeClass('picked').html('Play');
   }
 
   if (page === 'help') {
@@ -649,7 +653,7 @@ Renderer.render = (page, ship, item, playable, from) => {
     $('#ship').addClass('fade');
     $('#prev').addClass('invisible');
     $('#preview').addClass('fade');
-    $('#next').html('Play');
+    $('#next').removeClass('picked').html('Next');
   }
 
   if (page === 'game') {
@@ -659,7 +663,7 @@ Renderer.render = (page, ship, item, playable, from) => {
     $('#ship').removeClass('fade');
     $('#prev').removeClass('invisible').html('Help');
     $('#preview').removeClass('fade');
-    $('#next').html('Next');
+    $('#next').removeClass('picked').html('Next');
   }
 
   if (page === 'over') {
@@ -669,7 +673,7 @@ Renderer.render = (page, ship, item, playable, from) => {
     $('#ship').addClass('fade');
     $('#prev').removeClass('invisible').html('Print');
     $('#preview').addClass('fade');
-    $('#next').html('Play');
+    $('#next').removeClass('picked').html('Play');
   }
 
   Object.keys(ship.layout).forEach(id => Renderer.clear(id).addClass(ship.layout[id]));
@@ -863,18 +867,58 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
     let html;
 
     html = '';
-    html += '<div></div>';
+    html += '<div id="example-count">1</div>';
     html += `<div class="pod east">${tileHTML(9)}</div>`;
-    html += `<div class="crew north">${tileHTML(9)}</div>`;
-    html += `<div class="playable corner east">${tileHTML(9)}</div>`;
-    $('#example1').html(html);
+    html += `<div id="example-crew" class="crew north">${tileHTML(9)}</div>`;
+    html += `<div id="example-tile" class="playable">${tileHTML(9)}</div>`;
+    $('#example').html(html);
 
-    html = '';
-    html += '<div></div>';
-    html += `<div class="pod east">${tileHTML(9)}</div>`;
-    html += `<div class="crew north">${tileHTML(9)}</div>`;
-    html += `<div class="playable corner west">${tileHTML(9)}</div>`;
-    $('#example2').html(html);
+
+    let tick = 1;
+    setInterval(() => {
+      const count = $('#example-count');
+      const tile = $('#example-tile');
+      const crew = $('#example-crew');
+      const next = $('#next');
+
+      tile.removeClass('corner north east picked');
+      crew.removeClass('rescued');
+      next.removeClass('picked');
+
+      if (page !== 'help') {
+        return;
+      }
+
+      tick += 1;
+      if (tick > 6) {
+        tick = 1;
+      }
+
+      count.html(tick);
+
+      switch (tick) {
+        case 1:
+          break;
+        case 2:
+          tile.addClass('picked');
+          break;
+        case 3:
+          tile.addClass('corner north');
+          break;
+        case 4:
+          tile.addClass('picked corner north');
+          break;
+        case 5:
+          tile.addClass('corner east');
+          crew.addClass('rescued');
+          break;
+        case 6:
+          next.addClass('picked');
+          break;
+        default:
+          break;
+      }
+    }, 1000);
   }
 
   function play() {
