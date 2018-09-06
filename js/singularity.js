@@ -623,6 +623,23 @@ Engine.item = (ship) => {
 
 const Renderer = {};
 
+Renderer.animate = (callback) => {
+  let last = null;
+
+  function frame (time) {
+    if (last != null) {
+      const step = Math.min(time - last, 100) / 1000;
+      if (callback(step) === false) {
+        return;
+      }
+    }
+    last = time;
+    requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+};
+
 Renderer.clear = (id) => {
   const $ = Root.jQuery;
   const element = $(`#${id}`);
@@ -755,6 +772,7 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
 
     if (page === 'game') {
       page = 'help';
+      renderHelp();
       Renderer.invalidate(page, ship, item, AI.playable(ship, item), 'prev');
       return;
     }
@@ -768,6 +786,7 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
   function onNext() {
     if (page === 'intro') {
       page = 'help';
+      renderHelp();
       Renderer.invalidate(page, ship, item, AI.playable(ship, item), 'next');
       return;
     }
@@ -872,59 +891,67 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
     html += `<div id="example-crew" class="crew north">${tileHTML(9)}</div>`;
     html += `<div id="example-tile" class="playable">${tileHTML(9)}</div>`;
     $('#example').html(html);
+  }
 
+  function animateHelp(time) {
+    const $ = Root.jQuery;
+    const count = $('#example-count');
+    const tile = $('#example-tile');
+    const crew = $('#example-crew');
+    const next = $('#next');
 
-    let tick = 1;
-    setInterval(() => {
-      const count = $('#example-count');
-      const tile = $('#example-tile');
-      const crew = $('#example-crew');
-      const next = $('#next');
+    tile.removeClass('corner north east picked');
+    crew.removeClass('rescued');
+    next.removeClass('picked');
 
-      tile.removeClass('corner north east picked');
-      crew.removeClass('rescued');
-      next.removeClass('picked');
+    if (time <= 0.6) {
+      count.html(1);
+      return time;
+    }
 
-      if (page !== 'help') {
-        return;
-      }
+    if (time <= 1.2) {
+      count.html(1);
+      tile.addClass('picked');
+      return time;
+    }
 
-      tick += 1;
-      if (tick > 6) {
-        tick = 1;
-      }
+    if (time <= 1.8) {
+      count.html(2);
+      tile.addClass('corner north');
+      return time;
+    }
 
-      switch (tick) {
-        case 1:
-          count.html(1);
-          break;
-        case 2:
-          count.html(1);
-          tile.addClass('picked');
-          break;
-        case 3:
-          count.html(2);
-          tile.addClass('corner north');
-          break;
-        case 4:
-          count.html(2);
-          tile.addClass('picked corner north');
-          break;
-        case 5:
-          count.html(3);
-          tile.addClass('corner east');
-          crew.addClass('rescued');
-          break;
-        case 6:
-          count.html(3);
-          tile.addClass('corner east');
-          crew.addClass('rescued');
-          next.addClass('picked');
-          break;
-        default:
-          break;
-      }
-    }, 600);
+    if (time <= 2.4) {
+      count.html(2);
+      tile.addClass('picked corner north');
+      return time;
+    }
+
+    if (time <= 3.0) {
+      count.html(3);
+      tile.addClass('corner east');
+      crew.addClass('rescued');
+      return time;
+    }
+
+    if (time <= 3.6) {
+      count.html(3);
+      tile.addClass('corner east');
+      crew.addClass('rescued');
+      next.addClass('picked');
+      return time;
+    }
+
+    return 0;
+  }
+
+  function renderHelp() {
+    let time = 0;
+    drawHelp();
+    Renderer.animate((dt) => {
+      time = animateHelp(time + dt);
+      return page === 'help';
+    });
   }
 
   function play() {
