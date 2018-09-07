@@ -653,9 +653,9 @@ Renderer.clear = (id) => {
 Renderer.render = (page, ship, item, playable, from) => {
   const $ = Root.jQuery;
 
-  if (page === 'intro') {
+  if (page === 'intro' || page === 'help' || page === 'over') {
     $('#story').removeClass('hidden');
-    $('#help').addClass('hidden');
+    $('#example').removeClass('invisible');
     $('#timer').addClass('fade');
     $('#ship').addClass('fade');
     $('#prev').removeClass('invisible button').addClass('printer').html('');
@@ -663,19 +663,9 @@ Renderer.render = (page, ship, item, playable, from) => {
     $('#next').removeClass('picked').html('&rtri;');
   }
 
-  if (page === 'help') {
-    $('#story').addClass('hidden');
-    $('#help').removeClass('hidden');
-    $('#timer').addClass('fade');
-    $('#ship').addClass('fade');
-    $('#prev').removeClass('printer').addClass('invisible button').html('');
-    $('#preview').addClass('fade');
-    $('#next').removeClass('picked').html('&rtri;');
-  }
-
   if (page === 'game') {
     $('#story').addClass('hidden');
-    $('#help').addClass('hidden');
+    $('#example').addClass('invisible');
     $('#timer').removeClass('fade');
     $('#ship').removeClass('fade');
     $('#prev').removeClass('invisible printer').addClass('button').html('?');
@@ -684,13 +674,7 @@ Renderer.render = (page, ship, item, playable, from) => {
   }
 
   if (page === 'over') {
-    $('#story').removeClass('hidden');
-    $('#help').addClass('hidden');
-    $('#timer').addClass('fade');
-    $('#ship').addClass('fade');
-    $('#prev').removeClass('invisible').html('Print');
-    $('#preview').addClass('fade');
-    $('#next').removeClass('picked').html('Play');
+    $('#example').addClass('invisible');
   }
 
   Object.keys(ship.layout).forEach(id => Renderer.clear(id).addClass(ship.layout[id]));
@@ -767,6 +751,7 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
     }
 
     if (page === 'help') {
+      Root.print();
       return;
     }
 
@@ -785,8 +770,7 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
 
   function onNext() {
     if (page === 'intro') {
-      page = 'help';
-      renderHelp();
+      page = 'game';
       Renderer.invalidate(page, ship, item, AI.playable(ship, item), 'next');
       return;
     }
@@ -815,6 +799,8 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
 
     if (page === 'over') {
       reset();
+      page = 'intro';
+      renderHelp();
       Renderer.invalidate(page, ship, item, AI.playable(ship, item), 'next');
       return;
     }
@@ -950,7 +936,7 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
     drawHelp();
     Renderer.animate((dt) => {
       time = animateHelp(time + dt);
-      return page === 'help';
+      return page === 'help' || page === 'intro';
     });
   }
 
@@ -960,7 +946,7 @@ Renderer.invalidate = (page, ship, item, playable, from) => {
     reset();
     drawShip();
     drawTiles();
-    drawHelp();
+    renderHelp();
 
     ship.files.forEach((file) => {
       ship.ranks.forEach((rank) => {
