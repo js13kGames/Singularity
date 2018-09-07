@@ -658,9 +658,9 @@ Renderer.render = (page, ship, item, playable, from) => {
     $('#help').addClass('hidden');
     $('#timer').addClass('fade');
     $('#ship').addClass('fade');
-    $('#prev').removeClass('invisible').html('Print');
+    $('#prev').removeClass('invisible button').addClass('printer').html('');
     $('#preview').addClass('fade');
-    $('#next').removeClass('picked').html('Play');
+    $('#next').removeClass('picked').html('&rtri;');
   }
 
   if (page === 'help') {
@@ -668,9 +668,9 @@ Renderer.render = (page, ship, item, playable, from) => {
     $('#help').removeClass('hidden');
     $('#timer').addClass('fade');
     $('#ship').addClass('fade');
-    $('#prev').addClass('invisible');
+    $('#prev').removeClass('printer').addClass('invisible button').html('');
     $('#preview').addClass('fade');
-    $('#next').removeClass('picked').html('Next');
+    $('#next').removeClass('picked').html('&rtri;');
   }
 
   if (page === 'game') {
@@ -678,9 +678,9 @@ Renderer.render = (page, ship, item, playable, from) => {
     $('#help').addClass('hidden');
     $('#timer').removeClass('fade');
     $('#ship').removeClass('fade');
-    $('#prev').removeClass('invisible').html('Help');
+    $('#prev').removeClass('invisible printer').addClass('button').html('?');
     $('#preview').removeClass('fade');
-    $('#next').removeClass('picked').html('Next');
+    $('#next').removeClass('picked').html('&rtri;');
   }
 
   if (page === 'over') {

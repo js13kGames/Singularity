@@ -63,10 +63,12 @@ a, a:visited {
 }
 
 .quote {
-  background: rgba(255,255,255,.2);
+  /*
   padding: ($font-size / 2);
+  background: rgba(255,255,255,.2);
   border: 1px solid rgba(255,255,255,.4);
   border-radius: 5px;
+  */
 }
 
 .cite {
@@ -81,7 +83,6 @@ a, a:visited {
   border: 1px solid rgba(255,255,255,.4);
   border-radius: 5px;
   text-align: center;
-  min-width: ($tile-size * 1.5);
 }
 
 /* HELP */
@@ -643,6 +644,49 @@ a, a:visited {
   width: $tile-size;
   height: $tile-size;
   background: url(spanner.svg);
+}
+
+/* PRINTER */
+$printer-size: 4rem;
+
+.printer {
+  position: relative;
+  display: inline-grid;
+  width: $printer-size;
+  height: ($printer-size * .6);
+  border-radius: 10%;
+  border: .2rem solid currentColor;
+  justify-items: center;
+  color: rgba(128,128,128,1);
+}
+
+.printer:before {
+  position: absolute;
+  content: "";
+  top: calc(-50% - .4rem);
+  display: inline-grid;
+  width: 60%;
+  height: 50%;
+  border-top-left-radius: 10%;
+  border-top-right-radius: 10%;
+  border: .2rem solid currentColor;
+  border-bottom: none;
+}
+
+.printer:after {
+  position: absolute;
+  content: "\0224b";
+  top: 60%;
+  display: inline-grid;
+  width: 60%;
+  height: 70%;
+  border-radius: 10%;
+  border: .2rem solid currentColor;
+  background: black;
+  font-size: ($printer-size * .7);
+  line-height: 0;
+  text-align: center;
+  overflow: hidden;
 }
 
 /* COLOPHON */
