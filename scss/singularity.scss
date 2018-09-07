@@ -63,12 +63,6 @@ a, a:visited {
 }
 
 .quote {
-  /*
-  padding: ($font-size / 2);
-  background: rgba(255,255,255,.2);
-  border: 1px solid rgba(255,255,255,.4);
-  border-radius: 5px;
-  */
 }
 
 .cite {
@@ -83,17 +77,6 @@ a, a:visited {
   border: 1px solid rgba(255,255,255,.4);
   border-radius: 5px;
   text-align: center;
-}
-
-/* HELP */
-.help {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: ($font-size / 2);
-  display: grid;
-  grid-template-columns: 1fr;
-  justify-items: center;
 }
 
 .rule {
@@ -635,15 +618,6 @@ a, a:visited {
 .junction > div:nth-child(6),
 .junction > div:nth-child(8) {
   background: $white;
-}
-
-/* WRENCH */
-.wrench {
-  border: 2px solid $gray;
-  display: inline-block;
-  width: $tile-size;
-  height: $tile-size;
-  background: url(spanner.svg);
 }
 
 /* PRINTER */
