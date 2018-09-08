@@ -561,6 +561,44 @@ const Engine = {};
 
 Engine.corridors = [];
 
+Engine.swap = (array, x, y) => {
+  const result = array.slice();
+  let temp = result[x];
+  result[x] = result[y];
+  result[y] = temp;
+  return result;
+};
+
+// This uses Heap's algorithm to generate all possible permutations of the items in an array.
+// https://en.wikipedia.org/wiki/Heap's_algorithm
+Engine.permutations = (array) => {
+  let a = array.slice();
+  const n = array.length;
+  const c = new Array(n).fill(0);
+
+  const results = [];
+  results.push(a);
+
+  let i = 0;
+  while (i < n) {
+    if (c[i] < i) {
+      if (i % 2 === 0) {
+        a = Engine.swap(a, 0, i);
+      } else {
+        a = Engine.swap(a, c[i], i);
+      }
+      results.push(a);
+      c[i] += 1;
+      i = 0;
+    } else {
+      c[i] = 0;
+      i += 1;
+    }
+  }
+
+  return results;
+};
+
 Engine.tick = (ship, tile, item) => {
   if (!Rules.repaired(ship)) {
     return Rules.repair(ship, tile);
@@ -606,13 +644,19 @@ Engine.item = (ship) => {
     return 'west';
   }
 
-  let item = D6.pick(Engine.corridors);
-  if (item === undefined) {
-    Engine.corridors = ['hall', 'corner', 'tee', 'junction'];
-    item = D6.pick(Engine.corridors);
+  let item = Engine.corridors[0];
+  Engine.corridors = Engine.corridors.slice(1);
+
+  if (Engine.corridors.length < 1) {
+    const possible = Engine.permutations(['hall', 'corner', 'tee', 'junction']);
+    const valid  = possible.filter(corridors => corridors[0] !== item);
+    Engine.corridors = D6.pick(valid);
   }
 
-  Engine.corridors = Engine.corridors.filter(id => id !== item);
+  if (item === undefined) {
+    item = Engine.corridors[0];
+    Engine.corridors = Engine.corridors.slice(1);
+  }
 
   if (AI.playable(ship, item).length < 1) {
     return 'reset';
