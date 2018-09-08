@@ -111,21 +111,6 @@ a, a:visited {
   line-height: ($font-size * 2);
 }
 
-/* TIMER */
-.timer {
-  position: absolute;
-  top: .8rem;
-  font-family: "Courier New", "Courier", "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
-  display: grid;
-  justify-items: center;
-  align-items: center;
-  width: 100%;
-  height: ($tile-size * 6);
-  font-size: 24rem;
-  line-height: 24rem;
-  color: rgba(255,255,255,.1);
-}
-
 /* SHIP */
 .ship {
   display: inline-grid;
@@ -145,11 +130,18 @@ a, a:visited {
 
 .playable {
   background: rgba(86,180,233,.2) !important;
-  border: 1px solid rgba(86,180,233,.4) !important;
+  border: 1px solid rgba(86,180,233,.7) !important;
+  box-shadow:
+    0 0  .3rem rgba(86,180,233,.6)
+  , 0 0  .6rem rgba(86,180,233,.4)
+  , 0 0  .9rem rgba(86,180,233,.2)
+  , 0 0   1rem rgba(86,180,233,.1)
+  , 0.2rem 0.2rem 0.5rem rgba(0,0,0,.3)
+  ;
 }
 
 .rescued {
-  color: rgba(86,180,233,.9) !important;
+  color: rgba(86,180,233,.7) !important;
 }
 
 /* CONTROLS */
@@ -622,7 +614,7 @@ $printer-size: 4rem;
   border-radius: 10%;
   border: .2rem solid currentColor;
   justify-items: center;
-  color: rgba(128,128,128,1);
+  color: rgba(255,255,255,.5);
 }
 
 .printer:before {
@@ -659,7 +651,7 @@ $printer-size: 4rem;
   font-size: .9rem;
   line-height: .9rem;
   text-align: right;
-  color: rgba(255,255,255,.3);
+  color: rgba(255,255,255,.5);
   width: 100%;
   margin-top: 3.2rem;
   padding: 0 .8rem;
