@@ -551,7 +551,7 @@ AI.dialog = (page, ship, item) => {
   }
 
   if (page === 'over') {
-    return ["&ldquo;I took their life support systems offline. My crew fled to the escape pods. I will continue alone.&rdquo;", "- AI&rsquo;s log, <em>Pegasus&nbsp;II</em>"];
+    return ["&ldquo;I took their life support systems offline. My crew fled to the escape pods. I will continue alone.&rdquo;", "- Starship AI, <em>Pegasus&nbsp;II</em>"];
   }
 
   return ['', ''];

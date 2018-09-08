@@ -3,4 +3,3 @@ print.css
 singularity.css
 screen.css
 singularity.js
-spanner.svg
