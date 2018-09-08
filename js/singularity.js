@@ -6,8 +6,6 @@ const Root = (typeof self === 'object' && self.self === self && self)
 
 const D6 = {};
 
-D6.roll = () => Math.floor(Math.random() * 6) + 1;
-
 D6.pick = (list) => {
   const index = Math.floor(Math.random() * list.length);
   return list[index];
@@ -21,7 +19,7 @@ Ship.create = () => {
 
   const layout = {};
 
-  const d6 = D6.roll();
+  const d6 = D6.pick([1, 2, 3, 4, 5, 6]);
 
   files.forEach((file) => {
     ranks.forEach((rank) => {
@@ -530,8 +528,8 @@ AI.create = () => {
       return 1;
     }
 
-    da = Rules.distance(ship, a, 'c4');
-    db = Rules.distance(ship, b, 'c4');
+    da = Math.min(...['c4', 'd4', 'c3', 'd3'].map(id => Rules.distance(ship, a, id)));
+    db = Math.min(...['c4', 'd4', 'c3', 'd3'].map(id => Rules.distance(ship, b, id)));
 
     if (da < db) {
       return -1;
