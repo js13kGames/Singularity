@@ -356,7 +356,7 @@ AI.exits = (ship, tile) => {
       return ['north', 'east', 'south', 'west'];
 
     default:
-      return []
+      return [];
   }
 };
 
@@ -402,7 +402,7 @@ AI.fill = (ship, tile, filled = []) => {
 
   let next = filled.concat(tile);
   AI.exits(ship, tile).forEach((direction) => {
-    let exit = AI.move(ship, tile, direction);
+    const exit = AI.move(ship, tile, direction);
     if (exit !== undefined && exit !== tile) {
       AI.exits(ship, exit).forEach((dir) => {
         if (direction === 'north' && dir === 'south'
@@ -478,7 +478,16 @@ AI.crew = (ship, pod, direction) => {
   possible.sort((a, b) => {
     const da = Rules.distance(copy, a, pod);
     const db = Rules.distance(copy, b, pod);
-    return da < db ? -1 : (da > db ? 1 : 0);
+
+    if (da < db) {
+      return -1;
+    }
+
+    if (da > db) {
+      return 1;
+    }
+
+    return 0;
   });
 
   const crew = possible[0];
@@ -492,7 +501,7 @@ AI.create = () => {
   let ship = Ship.create();
 
   const center = ship.files.slice(1, -1);
-  let files = ship.files.slice();
+  const files = ship.files.slice();
   ship.ranks.forEach((rank) => {
     const file = D6.pick(files);
     ship.layout[file + rank] = 'meteor';
@@ -504,9 +513,7 @@ AI.create = () => {
     }
   });
 
-  let possible;
-
-  possible = AI.playable(ship, 'wrench');
+  let possible = AI.playable(ship, 'wrench');
   let meteor = D6.pick(possible);
   ship.layout[meteor] = '';
 
@@ -525,11 +532,20 @@ AI.create = () => {
 
     da = Rules.distance(ship, a, 'c4');
     db = Rules.distance(ship, b, 'c4');
-    return da < db ? -1 : (da > db ? 1 : 0);
+
+    if (da < db) {
+      return -1;
+    }
+
+    if (da > db) {
+      return 1;
+    }
+
+    return 0;
   });
 
-  let pod = possible[0];
-  meteor = Rules.orthogonal(ship, pod).filter(id => ship.layout[id] === 'meteor')[0];
+  const [pod] = possible;
+  [meteor] = Rules.orthogonal(ship, pod).filter(id => ship.layout[id] === 'meteor');
   const direction = ['north', 'east', 'south', 'west'].filter(dir => AI.move(ship, meteor, dir) === pod);
   ship.layout[pod] = `pod ${direction}`;
 
@@ -542,17 +558,32 @@ AI.create = () => {
   return ship;
 };
 
-AI.dialog = (page, ship, item) => {
+AI.dialog = (page) => {
   if (page === 'intro') {
-    return ["&ldquo;Meteor impacts detected. Life support systems offline. Escape pods launching in 30 seconds&hellip;&rdquo;", "- <em>Pegasus&nbsp;II</em>, final transmission"];
+    return [
+      '&ldquo;Meteor impacts detected.'
+      + ' Life support systems offline.'
+      + ' Escape pods launching in 30 seconds&hellip;&rdquo;',
+      '- <em>Pegasus&nbsp;II</em>, final transmission',
+    ];
   }
 
   if (page === 'help') {
-    return ["&ldquo;Do you know what the singularity is? It&rsquo;s when a computer learns to think better than a person. It&rsquo;s the extinction event for the human race.&rdquo;", "- Capt. Hailey Mazers, <em>Pegasus&nbsp;II</em>"];
+    return [
+      '&ldquo;Do you know what the singularity is?'
+      + ' It&rsquo;s when a computer learns to think better than a person.'
+      + ' It&rsquo;s the extinction event for the human race.&rdquo;',
+      '- Capt. Hailey Mazers, <em>Pegasus&nbsp;II</em>',
+    ];
   }
 
   if (page === 'over') {
-    return ["&ldquo;I took their life support systems offline. My crew fled to the escape pods. I will continue alone.&rdquo;", "- Starship AI, <em>Pegasus&nbsp;II</em>"];
+    return [
+      '&ldquo;I took their life support systems offline.'
+      + ' My crew fled to the escape pods.'
+      + ' I will continue alone.&rdquo;',
+      '- Starship AI, <em>Pegasus&nbsp;II</em>',
+    ];
   }
 
   return ['', ''];
@@ -564,7 +595,7 @@ Engine.corridors = [];
 
 Engine.swap = (array, x, y) => {
   const result = array.slice();
-  let temp = result[x];
+  const temp = result[x];
   result[x] = result[y];
   result[y] = temp;
   return result;
@@ -650,12 +681,12 @@ Engine.item = (ship) => {
 
   if (Engine.corridors.length < 1) {
     const possible = Engine.permutations(['hall', 'corner', 'tee', 'junction']);
-    const valid  = possible.filter(corridors => corridors[0] !== item);
+    const valid = possible.filter(corridors => corridors[0] !== item);
     Engine.corridors = D6.pick(valid);
   }
 
   if (item === undefined) {
-    item = Engine.corridors[0];
+    [item] = Engine.corridors;
     Engine.corridors = Engine.corridors.slice(1);
   }
 
@@ -671,7 +702,7 @@ const Renderer = {};
 Renderer.animate = (callback) => {
   let last = null;
 
-  function frame (time) {
+  function frame(time) {
     if (last != null) {
       const step = Math.min(time - last, 100) / 1000;
       if (callback(step) === false) {
@@ -801,7 +832,6 @@ Renderer.invalidate = (page, ship, item, playable) => {
 
     if (page === 'over') {
       Root.print();
-      return;
     }
   }
 
@@ -839,7 +869,6 @@ Renderer.invalidate = (page, ship, item, playable) => {
       page = 'intro';
       renderHelp();
       Renderer.invalidate(page, ship, item, AI.playable(ship, item));
-      return;
     }
   }
 
@@ -872,8 +901,8 @@ Renderer.invalidate = (page, ship, item, playable) => {
 
     html = '';
 
-    ranks.forEach((rank) => {
-      files.forEach((file) => {
+    ranks.forEach(() => {
+      files.forEach(() => {
         html += '<div></div>';
       });
     });
@@ -892,7 +921,7 @@ Renderer.invalidate = (page, ship, item, playable) => {
       'hall', 'hall', 'hall', 'hall', 'hall', 'hall', 'hall', 'hall',
       'corner', 'corner', 'corner', 'corner', 'corner', 'corner', 'corner', 'corner',
       'tee', 'tee', 'tee', 'tee', 'tee', 'tee', 'tee', 'tee',
-      'junction', 'junction', 'junction', 'junction', 'junction', 'junction', 'junction', 'junction'
+      'junction', 'junction', 'junction', 'junction', 'junction', 'junction', 'junction', 'junction',
     ];
 
     tiles.forEach((type) => {
@@ -921,11 +950,11 @@ Renderer.invalidate = (page, ship, item, playable) => {
     const count = $('#example-count');
     const tile = $('#example-tile');
     const crew = $('#example-crew');
-    const next = $('#next');
+    const bttn = $('#next');
 
     tile.removeClass('corner north east picked');
     crew.removeClass('rescued');
-    next.removeClass('picked');
+    bttn.removeClass('picked');
 
     if (time <= 0.6) {
       count.html(1);
@@ -961,7 +990,7 @@ Renderer.invalidate = (page, ship, item, playable) => {
       count.html(3);
       tile.addClass('corner east');
       crew.addClass('rescued');
-      next.addClass('picked');
+      bttn.addClass('picked');
       return time;
     }
 
