@@ -556,7 +556,7 @@ AI.create = () => {
   return ship;
 };
 
-AI.dialog = (page) => {
+AI.dialog = (page, ship) => {
   if (page === 'intro') {
     return [
       '&ldquo;Meteor impacts detected.'
@@ -576,9 +576,29 @@ AI.dialog = (page) => {
   }
 
   if (page === 'over') {
+    const count = AI.rescued(ship).length;
+    let rescued = 'None';
+
+    if (count >= 1) {
+      rescued = 'One';
+    }
+
+    if (count >= 2) {
+      rescued = 'Two';
+    }
+
+    if (count >= 3) {
+      rescued = 'Three';
+    }
+
+    if (count >= 4) {
+      rescued = 'Four';
+    }
+
     return [
       '&ldquo;I took their life support systems offline.'
       + ' My crew fled to the escape pods.'
+      + ` ${rescued} of them made it.`
       + ' I will continue alone.&rdquo;',
       '- Starship AI, <em>Pegasus&nbsp;II</em>',
     ];
@@ -765,7 +785,7 @@ Renderer.render = (page, ship, item, playable) => {
   }
   Renderer.clear('preview').addClass(preview);
 
-  const [dialog, cite] = AI.dialog(page, ship, item);
+  const [dialog, cite] = AI.dialog(page, ship);
   $('#dialog').html(`${dialog}<div class="cite">${cite}</div>`);
 };
 
