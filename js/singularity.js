@@ -405,10 +405,10 @@ AI.fill = (ship, tile, filled = []) => {
     const exit = AI.move(ship, tile, direction);
     if (exit !== undefined && exit !== tile) {
       AI.exits(ship, exit).forEach((dir) => {
-        if (direction === 'north' && dir === 'south'
-          || direction === 'south' && dir === 'north'
-          || direction === 'east' && dir === 'west'
-          || direction === 'west' && dir === 'east') {
+        if ((direction === 'north' && dir === 'south')
+          || (direction === 'south' && dir === 'north')
+          || (direction === 'east' && dir === 'west')
+          || (direction === 'west' && dir === 'east')) {
           next = AI.fill(ship, exit, next);
         }
       });
@@ -790,88 +790,6 @@ Renderer.invalidate = (page, ship, item, playable) => {
     item = Engine.item(ship);
   }
 
-  function onShip(element) {
-    if (page !== 'game' || AI.playable(ship).length <= 0) {
-      return;
-    }
-
-    const tile = element.unwrap().id;
-    const playable = AI.playable(ship, item);
-
-    if (next !== undefined && prev === tile) {
-      next = Rules.rotate(next, tile);
-    } else {
-      next = Engine.tick(ship, tile, item);
-    }
-
-    prev = tile;
-    Renderer.invalidate(page, next, item, playable);
-
-    if (!playable.includes(tile)) {
-      next = undefined;
-    }
-  }
-
-  function onPrev() {
-    if (page === 'intro') {
-      Root.print();
-      return;
-    }
-
-    if (page === 'help') {
-      Root.print();
-      return;
-    }
-
-    if (page === 'game') {
-      page = 'help';
-      renderHelp();
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
-      return;
-    }
-
-    if (page === 'over') {
-      Root.print();
-    }
-  }
-
-  function onNext() {
-    if (page === 'intro') {
-      page = 'game';
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
-      return;
-    }
-
-    if (page === 'help') {
-      page = 'game';
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
-      return;
-    }
-
-    if (page === 'game' && next !== undefined) {
-      ship = next;
-      ship.d6 = D6.pick([1, 2, 3, 4, 5, 6].filter(n => n !== ship.d6));
-      prev = undefined;
-      next = undefined;
-      item = Engine.item(ship);
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
-      return;
-    }
-
-    if (page === 'game' && item === 'reset') {
-      page = 'over';
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
-      return;
-    }
-
-    if (page === 'over') {
-      reset();
-      page = 'intro';
-      renderHelp();
-      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
-    }
-  }
-
   function tileHTML(count) {
     let html = '';
 
@@ -1004,6 +922,88 @@ Renderer.invalidate = (page, ship, item, playable) => {
       time = animateHelp(time + dt);
       return page === 'help' || page === 'intro';
     });
+  }
+
+  function onShip(element) {
+    if (page !== 'game' || AI.playable(ship).length <= 0) {
+      return;
+    }
+
+    const tile = element.unwrap().id;
+    const playable = AI.playable(ship, item);
+
+    if (next !== undefined && prev === tile) {
+      next = Rules.rotate(next, tile);
+    } else {
+      next = Engine.tick(ship, tile, item);
+    }
+
+    prev = tile;
+    Renderer.invalidate(page, next, item, playable);
+
+    if (!playable.includes(tile)) {
+      next = undefined;
+    }
+  }
+
+  function onPrev() {
+    if (page === 'intro') {
+      Root.print();
+      return;
+    }
+
+    if (page === 'help') {
+      Root.print();
+      return;
+    }
+
+    if (page === 'game') {
+      page = 'help';
+      renderHelp();
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      return;
+    }
+
+    if (page === 'over') {
+      Root.print();
+    }
+  }
+
+  function onNext() {
+    if (page === 'intro') {
+      page = 'game';
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      return;
+    }
+
+    if (page === 'help') {
+      page = 'game';
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      return;
+    }
+
+    if (page === 'game' && next !== undefined) {
+      ship = next;
+      ship.d6 = D6.pick([1, 2, 3, 4, 5, 6].filter(n => n !== ship.d6));
+      prev = undefined;
+      next = undefined;
+      item = Engine.item(ship);
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      return;
+    }
+
+    if (page === 'game' && item === 'reset') {
+      page = 'over';
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+      return;
+    }
+
+    if (page === 'over') {
+      reset();
+      page = 'intro';
+      renderHelp();
+      Renderer.invalidate(page, ship, item, AI.playable(ship, item));
+    }
   }
 
   function play() {
