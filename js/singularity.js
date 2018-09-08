@@ -510,24 +510,25 @@ AI.create = () => {
   let meteor = D6.pick(possible);
   ship.layout[meteor] = '';
 
-  possible = AI.playable(ship, 'pod').filter((id) => {
-    const orthogonal = Rules.orthogonal(ship, id);
-    const empty = orthogonal.filter(x => ship.layout[x] === '');
-    return empty.length >= 3;
-  });
-
+  possible = AI.playable(ship, 'pod');
   possible.sort((a, b) => {
-    const da = Rules.distance(ship, a, 'c4');
-    const db = Rules.distance(ship, b, 'c4');
+    let da = Rules.orthogonal(ship, a).filter(id => ship.layout[id] === '').length;
+    let db = Rules.orthogonal(ship, b).filter(id => ship.layout[id] === '').length;
+
+    if (da > db) {
+      return -1;
+    }
+
+    if (da < db) {
+      return 1;
+    }
+
+    da = Rules.distance(ship, a, 'c4');
+    db = Rules.distance(ship, b, 'c4');
     return da < db ? -1 : (da > db ? 1 : 0);
   });
 
   let pod = possible[0];
-  const better = possible.filter(id => ['c4', 'd4', 'c3', 'd3'].indexOf(id) > -1);
-  if (better.length > 0) {
-    pod = D6.pick(better);
-  }
-
   meteor = Rules.orthogonal(ship, pod).filter(id => ship.layout[id] === 'meteor')[0];
   const direction = ['north', 'east', 'south', 'west'].filter(dir => AI.move(ship, meteor, dir) === pod);
   ship.layout[pod] = `pod ${direction}`;
