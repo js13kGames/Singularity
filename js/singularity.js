@@ -35,6 +35,82 @@ Ship.create = () => {
   };
 };
 
+Music = {};
+
+// The C notes from C0 to C8
+// https://pages.mtu.edu/~suits/notefreqs.html
+Music.c = [16.35, 32.70, 65.41, 130.81, 261.63, 523.25, 1046.50, 2093.00, 4186.01];
+
+// Starting at a given note, move up N notes
+// https://teropa.info/blog/2016/08/10/frequency-and-pitch.html
+Music.scale = (start, steps) => Math.round((start * Math.pow(2, steps / 12)) * 100) / 100;
+
+Music.note = (ctx, frequency, volume) => {
+  const gain = ctx.createGain();
+  gain.gain.value = volume;
+
+  const sine = ctx.createOscillator();
+  sine.type = 'sine';
+  sine.frequency.value = frequency;
+  sine.connect(gain);
+  gain.connect(ctx.destination);
+
+  sine.onended = function () {
+    delete gain;
+    delete sine;
+  };
+
+  return [sine, gain];
+};
+
+Music.init = () => {
+  if (Music.ctx === undefined) {
+    Music.ctx = new (Root.AudioContext || Root.webkitAudioContext)();
+  }
+};
+
+Music.play = (ctx, freq, gain, fade, duration, time) => {
+  const [note, vol] = Music.note(ctx, freq, gain);
+  note.frequency.linearRampToValueAtTime(freq, time);
+  vol.gain.linearRampToValueAtTime(0, time);
+  vol.gain.linearRampToValueAtTime(gain, time + fade);
+  note.start(time);
+  vol.gain.linearRampToValueAtTime(gain, time + (duration - fade));
+  vol.gain.linearRampToValueAtTime(0, time + duration);
+  note.stop(time + duration);
+};
+
+Music.sing = (type) => {
+  Music.init();
+
+  let index1 = {
+    'prev': 0,
+    'hall': 3,
+    'corner': 7,
+    'tee': 8,
+    'junction': 10,
+    'next': 17,
+  }[type];
+
+  if (index1 === undefined) {
+    index1 = 0;
+  }
+
+  const gain = 0.3;
+  const base = Music.c[4];
+  const index2 = index1 + 6;
+
+  const time = Music.ctx.currentTime;
+  const duration = .1;
+  const fade = duration * .25;
+
+  const freq1 = Music.scale(base, index1);
+  Music.play(Music.ctx, freq1, gain, fade, duration, time);
+
+  const freq2 = Music.scale(base, index2);
+  Music.play(Music.ctx, freq2, gain, fade, duration, time + duration);
+};
+
 Ship.clone = ship => JSON.parse(JSON.stringify(ship));
 
 Ship.set = (ship, tile, value) => {
@@ -944,8 +1020,10 @@ Renderer.invalidate = (page, ship, item, playable) => {
 
   function onShip(element) {
     if (page !== 'game' || AI.playable(ship).length <= 0) {
+      Music.sing('prev');
       return;
     }
+
 
     const tile = element.unwrap().id;
     const playable = AI.playable(ship, item);
@@ -961,6 +1039,9 @@ Renderer.invalidate = (page, ship, item, playable) => {
 
     if (!playable.includes(tile)) {
       next = undefined;
+      Music.sing('prev');
+    } else {
+      Music.sing(item);
     }
   }
 
@@ -976,6 +1057,7 @@ Renderer.invalidate = (page, ship, item, playable) => {
     }
 
     if (page === 'game') {
+      Music.sing('prev');
       page = 'help';
       renderHelp();
       Renderer.invalidate(page, ship, item, AI.playable(ship, item));
@@ -988,6 +1070,8 @@ Renderer.invalidate = (page, ship, item, playable) => {
   }
 
   function onNext() {
+    Music.sing('next');
+
     if (page === 'intro') {
       page = 'game';
       Renderer.invalidate(page, ship, item, AI.playable(ship, item));
