@@ -1,6 +1,10 @@
 # Singularity #
 
-Life support system offline. Escape pod launching in 30 seconds...
+"Meteor impacts detected. Life support systems offline. Escape pods launching in 30 seconds..."
+
+- _Pegasus II_, final transmission
+
+Singularity was built for [js13kGames 2018][js13k].
 
 ## Inspiration ##
 
@@ -25,6 +29,7 @@ Singularity is protected under a [Creative Commons Attribution 4.0 International
 License][cc].
 
 
+[js13k]: http://2018.js13kgames.com/ "Andrzej Mazur (js13kGames): HTML5 and JavaScript Game Development Competition in just 13 kilobytes"
 [night]: http://lea.verou.me/css3patterns/#starry-night "Lea Verou (CSS Patterns Gallery): Starry Night"
 [lea]: http://lea.verou.me/ "Lea Verou: Life on the bleeding edge (of web standards)"
 [pod]: https://200wordrpg.github.io/2015/rpg/winner/2015/04/01/EscapePodOne.html "Stephanie Bryant (200 Word RPG): Escape Pod One"
