@@ -154,10 +154,14 @@ a, a:visited {
 }
 
 /* METEOR */
+$meteor-size: ($tile-size - .4rem);
+
 .meteor {
-  display: grid;
+  display: inline-grid;
   grid-template-columns: repeat(3, 1fr);
   overflow: hidden;
+  justify-items: center;
+  align-items: center;
 }
 
 .meteor > div {
@@ -167,43 +171,55 @@ a, a:visited {
 }
 
 .meteor > div:nth-child(1) {
-  border-top: ($tile-size / 3) solid transparent;
+  border-top: ($meteor-size / 3) solid transparent;
   border-bottom: none;
-  border-left: ($tile-size / 6) solid transparent;
+  border-left: ($meteor-size / 6) solid transparent;
+  align-self: end;
+  justify-self: end;
 }
 
 .meteor > div:nth-child(2) {
-  border-top: ($tile-size / 6) solid transparent;
+  border-top: ($meteor-size / 6) solid transparent;
+  align-self: end;
 }
 
 .meteor > div:nth-child(3) {
-  border-top: ($tile-size / 6) solid transparent;
-  border-right: ($tile-size / 3) solid transparent;
+  border-top: ($meteor-size / 6) solid transparent;
+  border-right: ($meteor-size / 3) solid transparent;
   border-left: none;
+  align-self: end;
+  justify-self: start;
+}
+
+.meteor > div:nth-child(4) {
+  border-left: ($meteor-size / 6) solid transparent;
+  justify-self: end;
 }
 
 .meteor > div:nth-child(6) {
-  border-right: ($tile-size / 6) solid transparent;
+  border-right: ($meteor-size / 6) solid transparent;
+  justify-self: start;
+}
+
+.meteor > div:nth-child(7) {
+  border-left: ($meteor-size / 3) solid transparent;
+  border-right: none;
+  border-bottom: ($meteor-size / 6) solid transparent;
+  align-self: start;
+  justify-self: end;
+}
+
+.meteor > div:nth-child(8) {
+  border-bottom: ($meteor-size / 6) solid transparent;
+  align-self: start;
 }
 
 .meteor > div:nth-child(9) {
   border-top: none;
-  border-bottom: ($tile-size / 3) solid transparent;
-  border-right: ($tile-size / 6) solid transparent;
-}
-
-.meteor > div:nth-child(8) {
-  border-bottom: ($tile-size / 6) solid transparent;
-}
-
-.meteor > div:nth-child(7) {
-  border-left: ($tile-size / 3) solid transparent;
-  border-right: none;
-  border-bottom: ($tile-size / 6) solid transparent;
-}
-
-.meteor > div:nth-child(4) {
-  border-left: ($tile-size / 6) solid transparent;
+  border-bottom: ($meteor-size / 3) solid transparent;
+  border-right: ($meteor-size / 6) solid transparent;
+  align-self: start;
+  justify-self: start;
 }
 
 /* POD */
