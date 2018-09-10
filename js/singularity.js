@@ -1046,6 +1046,8 @@ Renderer.invalidate = (page, ship, item, playable) => {
   }
 
   function onPrev() {
+    Music.sing('next');
+
     if (page === 'intro') {
       Root.print();
       return;
@@ -1057,7 +1059,6 @@ Renderer.invalidate = (page, ship, item, playable) => {
     }
 
     if (page === 'game') {
-      Music.sing('prev');
       page = 'help';
       renderHelp();
       Renderer.invalidate(page, ship, item, AI.playable(ship, item));
