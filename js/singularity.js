@@ -35,7 +35,7 @@ Ship.create = () => {
   };
 };
 
-Music = {};
+const Music = {};
 
 // The C notes from C0 to C8
 // https://pages.mtu.edu/~suits/notefreqs.html
@@ -43,7 +43,7 @@ Music.c = [16.35, 32.70, 65.41, 130.81, 261.63, 523.25, 1046.50, 2093.00, 4186.0
 
 // Starting at a given note, move up N notes
 // https://teropa.info/blog/2016/08/10/frequency-and-pitch.html
-Music.scale = (start, steps) => Math.round((start * Math.pow(2, steps / 12)) * 100) / 100;
+Music.scale = (start, steps) => Math.round((start * (2 ** (steps / 12))) * 100) / 100;
 
 Music.note = (ctx, frequency, volume) => {
   const gain = ctx.createGain();
@@ -54,11 +54,6 @@ Music.note = (ctx, frequency, volume) => {
   sine.frequency.value = frequency;
   sine.connect(gain);
   gain.connect(ctx.destination);
-
-  sine.onended = function () {
-    delete gain;
-    delete sine;
-  };
 
   return [sine, gain];
 };
@@ -84,12 +79,12 @@ Music.sing = (type) => {
   Music.init();
 
   let index1 = {
-    'prev': 0,
-    'hall': 3,
-    'corner': 7,
-    'tee': 8,
-    'junction': 10,
-    'next': 17,
+    prev: 0,
+    hall: 3,
+    corner: 7,
+    tee: 8,
+    junction: 10,
+    next: 17,
   }[type];
 
   if (index1 === undefined) {
@@ -101,8 +96,8 @@ Music.sing = (type) => {
   const index2 = index1 + 6;
 
   const time = Music.ctx.currentTime;
-  const duration = .1;
-  const fade = duration * .25;
+  const duration = 0.1;
+  const fade = duration * 0.25;
 
   const freq1 = Music.scale(base, index1);
   Music.play(Music.ctx, freq1, gain, fade, duration, time);
