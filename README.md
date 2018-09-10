@@ -9,7 +9,9 @@ Singularity was built for [js13kGames 2018][js13k].
 ## Inspiration ##
 
 Singularity started out as a digital version of [Escape Pod One][pod] by
-[Stephanie Bryant][stephanie].
+[Stephanie Bryant][stephanie]. The sound effects are based on
+[tritone paradoxes][tritone], something I learned about from [Primrose][] by
+Jason Rohrer.
 
 ## Graphics ##
 
@@ -34,4 +36,6 @@ License][cc].
 [lea]: http://lea.verou.me/ "Lea Verou: Life on the bleeding edge (of web standards)"
 [pod]: https://200wordrpg.github.io/2015/rpg/winner/2015/04/01/EscapePodOne.html "Stephanie Bryant (200 Word RPG): Escape Pod One"
 [stephanie]: http://www.mortaine.com/blog/ "Stephanie Bryant: Mortaine's Blog"
+[tritone]: http://www.philomel.com/musical_illusions/tritone.php "Philomel Records: Diana Deutsch's Audio Illusions"
+[Primrose]: http://primrose.sourceforge.net/description.php "Jason Rohrer (SourceForge): Primrose"
 [cc]: https://creativecommons.org/licenses/by/4.0/ "Creative Commons Attribution 4.0 International"
