@@ -47,7 +47,7 @@ Music.scale = (start, steps) => Math.round((start * (2 ** (steps / 12))) * 100) 
 
 Music.note = (ctx, frequency, volume) => {
   const gain = ctx.createGain();
-  gain.gain.value = volume;
+  gain.gain.value = Math.max(volume, 0.01);
 
   const sine = ctx.createOscillator();
   sine.type = 'sine';
@@ -66,12 +66,12 @@ Music.init = () => {
 
 Music.play = (ctx, freq, gain, fade, duration, time) => {
   const [note, vol] = Music.note(ctx, freq, gain);
-  note.frequency.linearRampToValueAtTime(freq, time);
-  vol.gain.linearRampToValueAtTime(0, time);
-  vol.gain.linearRampToValueAtTime(gain, time + fade);
+  note.frequency.exponentialRampToValueAtTime(freq, time);
+  vol.gain.exponentialRampToValueAtTime(0.01, time);
+  vol.gain.exponentialRampToValueAtTime(gain, time + fade);
   note.start(time);
-  vol.gain.linearRampToValueAtTime(gain, time + (duration - fade));
-  vol.gain.linearRampToValueAtTime(0, time + duration);
+  vol.gain.exponentialRampToValueAtTime(gain, time + (duration - fade));
+  vol.gain.exponentialRampToValueAtTime(0.01, time + duration);
   note.stop(time + duration);
 };
 
