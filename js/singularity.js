@@ -78,7 +78,7 @@ Music.play = (ctx, freq, gain, fade, duration, time) => {
 Music.sing = (type) => {
   Music.init();
 
-  let index1 = {
+  let index = {
     prev: 5,
     hall: 0,
     corner: 3,
@@ -87,34 +87,32 @@ Music.sing = (type) => {
     next: 5,
   }[type];
 
-  if (index1 === undefined) {
-    index1 = 0;
+  if (index === undefined) {
+    index = 0;
   }
 
   let base = 3;
   let gain = 5 / 16;
 
   if (type === 'next') {
-    base += 1;
-    gain -= (2 / 16);
+    base = 4;
+    gain = 2 / 16;
   }
   if (type === 'prev') {
-    base -= 1;
-    gain += (2 / 16);
+    base = 2;
+    gain = 8 / 16;
   }
 
   base = Music.c[base];
-
-  const index2 = index1 + 6;
 
   const time = Music.ctx.currentTime;
   const duration = 1 / 8;
   const fade = 1 / 32;
 
-  const freq1 = Music.scale(base, index1);
+  const freq1 = Music.scale(base, index);
   Music.play(Music.ctx, freq1, gain, fade, duration, time);
 
-  const freq2 = Music.scale(base, index2);
+  const freq2 = Music.scale(base, index + 6);
   Music.play(Music.ctx, freq2, gain, fade, duration, time + duration);
 };
 
