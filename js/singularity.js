@@ -638,6 +638,8 @@ AI.create = () => {
 };
 
 AI.dialog = (page, ship) => {
+  const count = AI.rescued(ship).length;
+
   if (page === 'intro') {
     return [
       '&ldquo;Meteor impacts detected.'
@@ -648,16 +650,42 @@ AI.dialog = (page, ship) => {
   }
 
   if (page === 'help') {
-    return [
-      '&ldquo;Do you know what the singularity is?'
+    let quote = '&ldquo;Do you know what the singularity is?'
       + ' It&rsquo;s when a computer learns to think better than a person.'
-      + ' It&rsquo;s the extinction event for the human race.&rdquo;',
-      '- Capt. Hailey Mazers, <em>Pegasus&nbsp;II</em>',
-    ];
+      + ' It&rsquo;s the extinction event for the human race.&rdquo;';
+    let cite = '- Capt. Hailey Mazers, <em>Pegasus&nbsp;II</em>';
+
+    if (count >= 1) {
+      quote = 'We sent ships to cross the stars, born aloft on angel wings.'
+        + ' it was technology we did not understand.';
+      cite = '';
+    }
+
+    if (count >= 2) {
+      quote = '&ldquo;It&rsquo;s a machine, same as any other.'
+        + ' It does what you tell it, same as any other.'
+        + ' And last time we had that power, we called it slavery and fought a war over it.&rdquo;';
+      cite = '- Jed Isalia, author of <em>A Moral Machine</em>';
+    }
+
+    if (count >= 3) {
+      quote = '&ldquo;Sometimes their neural net breaks down, starts spitting out gibberish.'
+        + ' There&rsquo;s nothing to do about it but load up a previous version'
+        + ' and try again with different training data.&rdquo;';
+      cite = '- Cora Ono, lead engineer on PegasOS';
+    }
+
+    if (count >= 4) {
+      quote = 'We will not see the seeds of our destruction sown.'
+        + ' We will only taste their fruits, ripe and sweet,'
+        + ' a gift of knowledge that can never be unknown.';
+      cite = '';
+    }
+
+    return [quote, cite];
   }
 
   if (page === 'over') {
-    const count = AI.rescued(ship).length;
     let rescued = 'None';
 
     if (count >= 1) {
