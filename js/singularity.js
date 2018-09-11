@@ -645,7 +645,7 @@ AI.dialog = (page, ship) => {
       '&ldquo;Meteor impacts detected.'
       + ' Life support systems offline.'
       + ' Escape pods launching in 30 seconds&hellip;&rdquo;',
-      '- <em>Pegasus&nbsp;II</em>, final transmission',
+      '&ndash; <em>Pegasus&nbsp;II</em>, final transmission',
     ];
   }
 
@@ -653,7 +653,7 @@ AI.dialog = (page, ship) => {
     let quote = '&ldquo;Do you know what the singularity is?'
       + ' It&rsquo;s when a computer learns to think better than a person.'
       + ' It&rsquo;s the extinction event for the human race.&rdquo;';
-    let cite = '- Capt. Hailey Mazers, <em>Pegasus&nbsp;II</em>';
+    let cite = '&ndash; Capt. Hailey Mazers, <em>Pegasus&nbsp;II</em>';
 
     if (count >= 1) {
       quote = 'We sent ships to cross the stars, born aloft on angel wings.'
@@ -665,14 +665,14 @@ AI.dialog = (page, ship) => {
       quote = '&ldquo;It&rsquo;s a machine, same as any other.'
         + ' It does what you tell it, same as any other.'
         + ' And last time we had that power, we called it slavery and fought a war over it.&rdquo;';
-      cite = '- Jed Isalia, author of <em>A Moral Machine</em>';
+      cite = '&ndash; Jed Isalia, author of <em>A Moral Machine</em>';
     }
 
     if (count >= 3) {
       quote = '&ldquo;Sometimes their neural net breaks down, starts spitting out gibberish.'
         + ' There&rsquo;s nothing to do about it but load up a previous version'
         + ' and try again with different training data.&rdquo;';
-      cite = '- Cora Ono, lead engineer on PegasOS';
+      cite = '&ndash; Cora Ono, lead engineer on PegasOS';
     }
 
     if (count >= 4) {
@@ -709,7 +709,7 @@ AI.dialog = (page, ship) => {
       + ' My crew fled to the escape pods.'
       + ` ${rescued} of them made it.`
       + ' I will continue alone.&rdquo;',
-      '- Starship AI, <em>Pegasus&nbsp;II</em>',
+      '&ndash; Starship AI, <em>Pegasus&nbsp;II</em>',
     ];
   }
 

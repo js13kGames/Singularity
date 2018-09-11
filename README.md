@@ -1,8 +1,21 @@
 # Singularity #
 
-"Meteor impacts detected. Life support systems offline. Escape pods launching in 30 seconds..."
+Singularity is an offline game. Press the print button. Read the rules. Cut out
+the board and tiles. Set a timer, and get ready to save the crew of the
+_Pegasus II_.
 
-- _Pegasus II_, final transmission
+Singularity is [an online game][sing]. Press the play button. Place a corridor
+on the ship. Tap the corridor to rotate it. Press the play button to get the
+next corridor. Can you rescue the crew of the _Pegasus II_?
+
+Singularity is a story. Press the play button. Place corridors on the ship.
+Rescue the crew one at a time. After each rescue, press the help button to
+reveal the fate of the _Pegasus II_.
+
+> "Meteor impacts detected. Life support systems offline. Escape pods launching
+> in 30 seconds..."
+>
+> &ndash; _Pegasus II_, final transmission
 
 Singularity was built for [js13kGames 2018][js13k].
 
@@ -31,6 +44,7 @@ Singularity is protected under a [Creative Commons Attribution 4.0 International
 License][cc].
 
 
+[sing]: https://www.frankmitchell.org/singularity/ "Frank Mitchell: Singularity - a game for js13kGames 2018"
 [js13k]: http://2018.js13kgames.com/ "Andrzej Mazur (js13kGames): HTML5 and JavaScript Game Development Competition in just 13 kilobytes"
 [night]: http://lea.verou.me/css3patterns/#starry-night "Lea Verou (CSS Patterns Gallery): Starry Night"
 [lea]: http://lea.verou.me/ "Lea Verou: Life on the bleeding edge (of web standards)"
