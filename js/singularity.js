@@ -79,25 +79,37 @@ Music.sing = (type) => {
   Music.init();
 
   let index1 = {
-    prev: 0,
-    hall: 3,
-    corner: 7,
-    tee: 8,
+    prev: 5,
+    hall: 0,
+    corner: 3,
+    tee: 7,
     junction: 10,
-    next: 17,
+    next: 5,
   }[type];
 
   if (index1 === undefined) {
     index1 = 0;
   }
 
-  const gain = 0.3;
-  const base = Music.c[4];
+  let base = 3;
+  let gain = 5 / 16;
+
+  if (type === 'next') {
+    base += 1;
+    gain -= (2 / 16);
+  }
+  if (type === 'prev') {
+    base -= 1;
+    gain += (2 / 16);
+  }
+
+  base = Music.c[base];
+
   const index2 = index1 + 6;
 
   const time = Music.ctx.currentTime;
-  const duration = 0.1;
-  const fade = duration * 0.25;
+  const duration = 1 / 8;
+  const fade = 1 / 32;
 
   const freq1 = Music.scale(base, index1);
   Music.play(Music.ctx, freq1, gain, fade, duration, time);
