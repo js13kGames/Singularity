@@ -79,28 +79,27 @@ Music.sing = (type) => {
   Music.init();
 
   let index = {
-    prev: 5,
-    hall: 0,
-    corner: 3,
-    tee: 7,
-    junction: 10,
-    next: 5,
+    prev: 5, hall: 0, corner: 3, tee: 7, junction: 10, next: 5,
   }[type];
 
   if (index === undefined) {
     index = 0;
   }
 
-  let base = 3;
-  let gain = 5 / 16;
+  let gain = {
+    prev: 1, hall: 0.75, corner: 0.75, tee: 0.3125, junction: 0.3125, next: 0.125,
+  }[type];
 
-  if (type === 'next') {
-    base = 4;
-    gain = 2 / 16;
+  if (gain === undefined) {
+    gain = 0.5;
   }
-  if (type === 'prev') {
-    base = 2;
-    gain = 8 / 16;
+
+  let base = {
+    prev: 2, hall: 3, corner: 3, tee: 3, junction: 3, next: 4,
+  }[type];
+
+  if (base === undefined) {
+    base = 3;
   }
 
   base = Music.c[base];
